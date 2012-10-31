@@ -18,16 +18,16 @@ namespace GameStateManagementSample.Entities
         public Vector2 Position;
 
         // State of the player
-        public bool Active;
+        public Boolean Active;
 
         // Get the width of the player ship
-        public int Width
+        public Int32 Width
         {
             get { return PlayerTexture.Width; }
         }
 
         // Get the height of the player ship
-        public int Height
+        public Int32 Height
         {
             get { return PlayerTexture.Height; }
         }
@@ -37,7 +37,7 @@ namespace GameStateManagementSample.Entities
         {
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
         }
 
