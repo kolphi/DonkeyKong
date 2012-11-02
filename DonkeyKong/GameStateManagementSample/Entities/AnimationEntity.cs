@@ -53,26 +53,26 @@ namespace GameStateManagementSample.Entities
             // Update the elapsed time
             elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-              // If the elapsed time is larger than the frame time we need to switch frames
+            // If the elapsed time is larger than the frame time we need to switch frames
             if (elapsedTime > FrameTime)
-             {
-             // Move to the next frame
-                 CurrentFrame++;
- 
-          // If the currentFrame is equal to frameCount reset currentFrame to zero 
-          if (CurrentFrame == FrameCount)
-          {
-               CurrentFrame = 0;
-               // If we are not looping deactivate the animation
-               if (!Looping)
-                    Active = false;
-          }
-          // Reset the elapsed time to zero
-          elapsedTime = 0;
+            {
+                // Move to the next frame
+                CurrentFrame++;
+
+                // If the currentFrame is equal to frameCount reset currentFrame to zero 
+                if (CurrentFrame == FrameCount)
+                {
+                    CurrentFrame = 0;
+                    // If we are not looping deactivate the animation
+                    if (!Looping)
+                        Active = false;
+                }
+                // Reset the elapsed time to zero
+                elapsedTime = 0;
 
 
 
+            }
         }
     }
-
 }

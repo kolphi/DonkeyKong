@@ -39,7 +39,8 @@ namespace GameStateManagementSample
             graphics.IsFullScreen = true;
 
             // Choose whether you want a landscape or portait game by using one of the two helper functions.
-            InitializeLandscapeGraphics();
+            //InitializeLandscapeGraphics();
+            InitializePortraitGraphics();
             // InitializePortraitGraphics();
 #endif
 
