@@ -10,6 +10,7 @@
 using System;
 using GameStateManagement;
 using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace GameStateManagementSample
 {
@@ -36,6 +37,7 @@ namespace GameStateManagementSample
 
         void playButton_Tapped(object sender, EventArgs e)
         {
+            
             // When the "Play" button is tapped, we load the GameplayScreen
             LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new GameplayScreen());
         }
@@ -54,6 +56,9 @@ namespace GameStateManagementSample
 
             // In a real game, you'd want to store away the value of 
             // the button to turn off music here. :)
+            Debug.WriteLine("Music clicked");
+            //Debug.WriteLine(button.GenerateText());
+            
         }
 
         protected override void OnCancel()

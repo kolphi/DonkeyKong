@@ -40,6 +40,8 @@ namespace GameStateManagementSample
 
         InputAction pauseAction;
 
+        Texture2D grassTexture;
+
         #endregion
 
         #region Initialization
@@ -71,6 +73,8 @@ namespace GameStateManagementSample
                     content = new ContentManager(ScreenManager.Game.Services, "Content");
 
                 gameFont = content.Load<SpriteFont>("gamefont");
+
+                grassTexture = content.Load<Texture2D>("grass1");
 
                 // A real game would probably have more content than this sample, so
                 // it would take longer to load. We simulate that by delaying for a
@@ -238,14 +242,20 @@ namespace GameStateManagementSample
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target,
                                                Color.CornflowerBlue, 0, 0);
 
+            Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
+            Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
+
             // Our player and enemy are both actually just text strings.
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
             spriteBatch.Begin();
 
+            spriteBatch.Draw(grassTexture, fullscreen,
+                             new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+
             spriteBatch.DrawString(gameFont, "// TODO", playerPosition, Color.Green);
 
-            spriteBatch.DrawString(gameFont, "Insert Gameplay Here",
+            spriteBatch.DrawString(gameFont, "Make super duper cool game!",
                                    enemyPosition, Color.DarkRed);
 
             spriteBatch.End();

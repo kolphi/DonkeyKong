@@ -48,7 +48,7 @@ namespace GameStateManagementSample
         /// <summary>
         /// Helper that generates the actual Text value the base class uses for drawing.
         /// </summary>
-        private void GenerateText()
+        public void GenerateText()
         {
             Text = string.Format("{0}: {1}", option, value ? "On" : "Off");
         }
