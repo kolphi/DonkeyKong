@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameStateManagement;
+using System.Diagnostics;
 #endregion
 
 namespace GameStateManagementSample
@@ -265,10 +266,13 @@ namespace GameStateManagementSample
                              new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
             spriteBatch.Draw(cloudsTexture, cloudsPosition, new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
 
-            spriteBatch.DrawString(gameFont, "// TODO", playerPosition, Color.Green);
+            if (cloudsPosition.Y >= 15)
+            {
+                spriteBatch.Draw(cloudsTexture, fullscreen, new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+            }
 
-            spriteBatch.DrawString(gameFont, "Make super duper cool game!",
-                                   enemyPosition, Color.DarkRed);
+
+            //Debug.WriteLine(cloudsPosition);
 
             spriteBatch.End();
 
