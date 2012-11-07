@@ -24,16 +24,18 @@ namespace GameStateManagementSample.Entities
         public Int32 Width
         {
             get { return PlayerTexture.Width; }
+            private set { this.Width = value; }
         }
 
         // Get the height of the player ship
         public Int32 Height
         {
             get { return PlayerTexture.Height; }
+            private set { this.Height = value; }
         }
 
         #region basemethods
-        public void Initialize()
+        public void Initialize(Texture2D texture, Vector2 position)
         {
         }
 

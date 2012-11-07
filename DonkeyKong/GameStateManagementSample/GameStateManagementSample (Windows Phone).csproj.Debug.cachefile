@@ -1,9 +1,12 @@
 Content\background.xnb
 Content\blank.xnb
 Content\gradient.xnb
-Content\menu.xnb
 Content\menufont.xnb
 Content\gamefont.xnb
+<<<<<<< HEAD
+Content\menu.xnb
+=======
 Content\grass1.xnb
 Content\grass2.xnb
 Content\grass3.xnb
+>>>>>>> dc2aa717aa97e0d722e3d36ebd9229c0f0a8197c
