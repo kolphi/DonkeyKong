@@ -45,7 +45,6 @@ namespace GameStateManagementSample
             // Choose whether you want a landscape or portait game by using one of the two helper functions.
             //InitializeLandscapeGraphics();
             InitializePortraitGraphics();
-            // InitializePortraitGraphics();
 #endif
 
             // Create the screen factory and add it to the Services

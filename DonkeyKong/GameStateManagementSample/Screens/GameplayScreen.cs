@@ -41,6 +41,11 @@ namespace GameStateManagementSample
         InputAction pauseAction;
 
         Texture2D grassTexture;
+        Texture2D cloudsTexture;
+
+        Vector2 cloudsPosition = Vector2.Zero;
+        float cloudSpeed = 0.5f;
+
 
         #endregion
 
@@ -75,6 +80,7 @@ namespace GameStateManagementSample
                 gameFont = content.Load<SpriteFont>("gamefont");
 
                 grassTexture = content.Load<Texture2D>("grass1");
+                cloudsTexture = content.Load<Texture2D>("clouds");
 
                 // A real game would probably have more content than this sample, so
                 // it would take longer to load. We simulate that by delaying for a
@@ -153,13 +159,18 @@ namespace GameStateManagementSample
 
                 // Apply a stabilizing force to stop the enemy moving off the screen.
                 Vector2 targetPosition = new Vector2(
-                    ScreenManager.GraphicsDevice.Viewport.Width / 2 - gameFont.MeasureString("Insert Gameplay Here").X / 2, 
+                    ScreenManager.GraphicsDevice.Viewport.Width / 2 - gameFont.MeasureString("Insert Gameplay Here").X / 2,
                     200);
 
                 enemyPosition = Vector2.Lerp(enemyPosition, targetPosition, 0.05f);
 
-                // TODO: this game isn't very fun! You could probably improve
-                // it by inserting something more interesting in this space :-)
+                //moving clouds along Y axis
+                if (Math.Abs(cloudsPosition.Y) > ScreenManager.GraphicsDevice.Viewport.Width || cloudsPosition.Y == 0)
+                    cloudSpeed *= -1;
+                {
+
+                    cloudsPosition = new Vector2(0, cloudsPosition.Y - cloudSpeed);
+                }
             }
         }
 
@@ -252,6 +263,7 @@ namespace GameStateManagementSample
 
             spriteBatch.Draw(grassTexture, fullscreen,
                              new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+            spriteBatch.Draw(cloudsTexture, cloudsPosition, new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
 
             spriteBatch.DrawString(gameFont, "// TODO", playerPosition, Color.Green);
 

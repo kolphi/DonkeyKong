@@ -59,6 +59,7 @@ namespace GameStateManagementSample
                     content = new ContentManager(ScreenManager.Game.Services, "Content");
 
                 backgroundTexture = content.Load<Texture2D>("menu");
+               
             }
         }
 
@@ -104,6 +105,7 @@ namespace GameStateManagementSample
 
             spriteBatch.Draw(backgroundTexture, fullscreen,
                              new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+            
 
             spriteBatch.End();
         }
