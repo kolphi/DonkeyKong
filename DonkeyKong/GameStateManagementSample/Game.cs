@@ -12,6 +12,7 @@ using GameStateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using GameStateManagementSample.Entities;
 
 namespace GameStateManagementSample
 {
@@ -26,6 +27,7 @@ namespace GameStateManagementSample
         GraphicsDeviceManager graphics;
         ScreenManager screenManager;
         ScreenFactory screenFactory;
+        PlayerEntity player;
         
         SpriteBatch spriteBatch;
 
@@ -45,6 +47,7 @@ namespace GameStateManagementSample
             // Choose whether you want a landscape or portait game by using one of the two helper functions.
             //InitializeLandscapeGraphics();
             InitializePortraitGraphics();
+            // InitializePortraitGraphics();
 #endif
 
             // Create the screen factory and add it to the Services
@@ -78,7 +81,8 @@ namespace GameStateManagementSample
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            Texture2D playerTexture = content.Load<Texture2D>("grass1");
+            player.Initialize();
             base.Initialize();
         }
 
@@ -92,6 +96,11 @@ namespace GameStateManagementSample
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            // Load the player resources 
+            Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,
+            GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+
+            player.Initialize(Content.Load<Texture2D>("player"), playerPosition); 
         }
 
         /// <summary>
@@ -155,10 +164,7 @@ namespace GameStateManagementSample
             graphics.PreferredBackBufferHeight = 800;
         }
 
-        private void loadContent()
-        {
-
-        }
+       
 
         /// <summary>
         /// Helper method to initialize the game to be a landscape game.

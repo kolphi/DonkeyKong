@@ -15,7 +15,7 @@ namespace GameStateManagementSample.Entities
         Int32 elapsedTime;
         Int32 FrameTime;
         Int32 FrameCount;
-        Int32 CurrentFrame;
+        Int32 currentFrame;
         Color color;
         Rectangle sourceRect;
         Rectangle destinationRect;
@@ -37,7 +37,7 @@ namespace GameStateManagementSample.Entities
 
             // Set the time to zero
             elapsedTime = 0;
-            CurrentFrame = 0;
+            currentFrame = 0;
 
             // Set the Animation to active by default
             Active = true;
@@ -57,12 +57,12 @@ namespace GameStateManagementSample.Entities
             if (elapsedTime > FrameTime)
             {
                 // Move to the next frame
-                CurrentFrame++;
+                currentFrame++;
 
                 // If the currentFrame is equal to frameCount reset currentFrame to zero 
-                if (CurrentFrame == FrameCount)
+                if (currentFrame == FrameCount)
                 {
-                    CurrentFrame = 0;
+                    currentFrame = 0;
                     // If we are not looping deactivate the animation
                     if (!Looping)
                         Active = false;
@@ -73,6 +73,26 @@ namespace GameStateManagementSample.Entities
 
 
             }
+               // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
+             sourceRect = new Rectangle(currentFrame * FrameWidth, 0, FrameWidth, FrameHeight);
+
+            // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
+             destinationRect = new Rectangle((int)Position.X - (int)(FrameWidth * scale) / 2,
+            (int)Position.Y - (int)(FrameHeight * scale) / 2, (int)(FrameWidth * scale), (int)(FrameHeight * scale));
+
         }
+
+
+        // Draw the Animation Strip 
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            // Only draw the animation when we are active
+            if (Active)
+            {
+                spriteBatch.Draw(SpriteStrip, destinationRect, sourceRect, color);
+            }
+        } 
+
+
     }
 }
