@@ -84,6 +84,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Entities\AnimationEntity.cs" />
     <Compile Include="Entities\BananaEntity.cs" />
     <Compile Include="Entities\DrawableEntity.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Entities\RewardEntity.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Interfaces\ICollidable.cs" />
+    <Compile Include="Entities\ParallaxingBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenFactory.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />

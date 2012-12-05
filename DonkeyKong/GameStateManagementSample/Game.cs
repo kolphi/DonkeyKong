@@ -13,6 +13,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using GameStateManagementSample.Entities;
+using Microsoft.Xna.Framework.Content;
+using System.Diagnostics;
 
 namespace GameStateManagementSample
 {
@@ -27,6 +29,7 @@ namespace GameStateManagementSample
         GraphicsDeviceManager graphics;
         ScreenManager screenManager;
         ScreenFactory screenFactory;
+
         PlayerEntity player;
         
         SpriteBatch spriteBatch;
@@ -38,6 +41,8 @@ namespace GameStateManagementSample
         {
             Content.RootDirectory = "Content";
 
+          
+
             graphics = new GraphicsDeviceManager(this);
             TargetElapsedTime = TimeSpan.FromTicks(333333);
 
@@ -47,7 +52,7 @@ namespace GameStateManagementSample
             // Choose whether you want a landscape or portait game by using one of the two helper functions.
             //InitializeLandscapeGraphics();
             InitializePortraitGraphics();
-            // InitializePortraitGraphics();
+            
 #endif
 
             // Create the screen factory and add it to the Services
@@ -78,12 +83,13 @@ namespace GameStateManagementSample
         /// related content.  Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
         /// </summary>
-        protected override void Initialize()
+        public void Initialize(ContentManager content, String texturePath, int screenWidth, int speed)
         {
             // TODO: Add your initialization logic here
             Texture2D playerTexture = content.Load<Texture2D>("grass1");
-            player.Initialize();
+            //player.Initialize(texture, position);
             base.Initialize();
+
         }
 
         /// <summary>
@@ -100,7 +106,7 @@ namespace GameStateManagementSample
             Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,
             GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
 
-            player.Initialize(Content.Load<Texture2D>("player"), playerPosition); 
+            //player.Initialize(Content.Load<Texture2D>("player"), playerPosition); 
         }
 
         /// <summary>
@@ -138,6 +144,9 @@ namespace GameStateManagementSample
                 this.Exit();
 
             // TODO: Add your update logic here
+
+            Debug.WriteLine(GraphicsDevice.Viewport.Height);
+          
 
             base.Update(gameTime);
         }

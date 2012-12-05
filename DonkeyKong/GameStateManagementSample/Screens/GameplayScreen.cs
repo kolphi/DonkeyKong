@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameStateManagement;
 using System.Diagnostics;
+using GameStateManagementSample.Entities;
 #endregion
 
 namespace GameStateManagementSample
@@ -41,11 +42,13 @@ namespace GameStateManagementSample
 
         InputAction pauseAction;
 
-        Texture2D grassTexture;
-        Texture2D cloudsTexture;
+        ParallaxingBackground grassTexture;
+        ParallaxingBackground cloudTexture;
+        Texture2D mainBackground;
 
-        Vector2 cloudsPosition = Vector2.Zero;
-        float cloudSpeed = 0.5f;
+
+        //Vector2 cloudsPosition = Vector2.Zero;
+        //float cloudSpeed = 0.5f;
 
 
         #endregion
@@ -80,8 +83,16 @@ namespace GameStateManagementSample
 
                 gameFont = content.Load<SpriteFont>("gamefont");
 
-                grassTexture = content.Load<Texture2D>("grass1");
-                cloudsTexture = content.Load<Texture2D>("clouds");
+                //grassTexture = content.Load<Texture2D>("grass1");
+                //cloudsTexture = content.Load<Texture2D>("clouds");
+
+                //backgrounds
+                cloudTexture = new ParallaxingBackground();
+                grassTexture = new ParallaxingBackground();
+
+                mainBackground = content.Load<Texture2D>("water");
+                grassTexture.Initialize(content, "grass2", 800, 1);
+                cloudTexture.Initialize(content, "clouds", 800, 3);
 
                 // A real game would probably have more content than this sample, so
                 // it would take longer to load. We simulate that by delaying for a
@@ -152,6 +163,9 @@ namespace GameStateManagementSample
 
             if (IsActive)
             {
+                grassTexture.Update();
+                cloudTexture.Update();
+
                 // Apply some random jitter to make the enemy move around.
                 const float randomization = 10;
 
@@ -165,13 +179,7 @@ namespace GameStateManagementSample
 
                 enemyPosition = Vector2.Lerp(enemyPosition, targetPosition, 0.05f);
 
-                //moving clouds along Y axis
-                if (Math.Abs(cloudsPosition.Y) > ScreenManager.GraphicsDevice.Viewport.Width || cloudsPosition.Y == 0)
-                    cloudSpeed *= -1;
-                {
-
-                    cloudsPosition = new Vector2(0, cloudsPosition.Y - cloudSpeed);
-                }
+                
             }
         }
 
@@ -262,17 +270,11 @@ namespace GameStateManagementSample
 
             spriteBatch.Begin();
 
-            spriteBatch.Draw(grassTexture, fullscreen,
-                             new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
-            spriteBatch.Draw(cloudsTexture, cloudsPosition, new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
-
-            if (cloudsPosition.Y >= 15)
-            {
-                spriteBatch.Draw(cloudsTexture, fullscreen, new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
-            }
-
-
-            //Debug.WriteLine(cloudsPosition);
+            //backgrounds
+            spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
+            grassTexture.Draw(spriteBatch);
+            cloudTexture.Draw(spriteBatch);
+           
 
             spriteBatch.End();
 
