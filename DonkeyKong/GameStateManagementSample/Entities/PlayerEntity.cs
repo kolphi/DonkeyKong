@@ -11,18 +11,26 @@ namespace GameStateManagementSample.Entities
     {
 
 
-        // State of the player
-        public bool Active;
-
         // Amount of hit points that player has
-        public int Health;
+        public int Health { get; set; }
 
+        public float Rotation { get; set; }
 
-        
-        public virtual void Initialize(Texture2D texture, Vector2 position)
+        public PlayerEntity()
         {
-            PlayerTexture = texture;
+            // Set the player to be active
+            Active = true;
 
+            // Set the player health
+            Health = 3;
+
+            //set rotation
+            Rotation = 0.5f;
+
+        }
+        
+        public override void Initialize(Vector2 position)
+        {
             // Set the starting position of the player around the middle of the screen and to the back
             Position = position;
 
@@ -30,13 +38,44 @@ namespace GameStateManagementSample.Entities
             Active = true;
 
             // Set the player health
-            Health = 100;
-        }
+            Health = 3;
 
-        public void Draw(SpriteBatch spriteBatch)
+            //set rotation
+            Rotation = 0;
+            
+   
+        }
+        /*
+        public void InitializeAnimation(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
         {
-            spriteBatch.Draw(PlayerTexture, Position, null,
-                 Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            //set player texture
+            PlayerTexture = texture;
+
+            
+            //set animation parameters
+            this.FrameWidth = frameWidth;
+            this.FrameHeight = frameHeight;
+            this.FrameCount = frameCount;
+            this.FrameTime = frametime;
+            this.Color = color;
+            this.scale = scale;
+            this.Looping = looping;
+            
+        }
+        */
+        
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+           // spriteBatch.Draw(PlayerTexture, Position,null,
+            //Color.White,Rotation, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+
+            // Only draw the animation when we are active
+            if (Active)
+            {
+                spriteBatch.Draw(PlayerTexture, destinationRect, sourceRect, Color, Rotation, Vector2.Zero, SpriteEffects.None, 0f);
+               // spriteBatch.Draw(PlayerTexture, Position, destinationRect, sourceRect);
+            }
+
         }
 
        

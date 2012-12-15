@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Graphics;
 using GameStateManagementSample.Entities;
 using Microsoft.Xna.Framework.Content;
 using System.Diagnostics;
+using Microsoft.Devices.Sensors;
 
 namespace GameStateManagementSample
 {
@@ -29,21 +30,21 @@ namespace GameStateManagementSample
         GraphicsDeviceManager graphics;
         ScreenManager screenManager;
         ScreenFactory screenFactory;
-
-        PlayerEntity player;
+      
         
         SpriteBatch spriteBatch;
+
 
         /// <summary>
         /// The main game constructor.
         /// </summary>
         public GameStateManagementGame()
         {
+            graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
           
-
-            graphics = new GraphicsDeviceManager(this);
+            
             TargetElapsedTime = TimeSpan.FromTicks(333333);
 
 #if WINDOWS_PHONE
@@ -85,9 +86,7 @@ namespace GameStateManagementSample
         /// </summary>
         public void Initialize(ContentManager content, String texturePath, int screenWidth, int speed)
         {
-            // TODO: Add your initialization logic here
-            Texture2D playerTexture = content.Load<Texture2D>("grass1");
-            //player.Initialize(texture, position);
+           
             base.Initialize();
 
         }
@@ -145,6 +144,8 @@ namespace GameStateManagementSample
 
             // TODO: Add your update logic here
 
+
+
             Debug.WriteLine(GraphicsDevice.Viewport.Height);
           
 
@@ -161,6 +162,7 @@ namespace GameStateManagementSample
 
             // The real drawing happens inside the screen manager component.
             base.Draw(gameTime);
+
         }
 
 #if WINDOWS_PHONE

@@ -35,17 +35,24 @@ namespace GameStateManagementSample.Entities
         }
 
         #region basemethods
-        public void Initialize(Texture2D texture, Vector2 position)
+        public virtual void Initialize(Vector2 position)
         {
         }
 
-        public void Update(GameTime gameTime)
+
+        public virtual void Update(GameTime gameTime)
         {
         }
 
-        public void Draw()
+        public virtual void Draw()
         {
         }
+
+        public virtual void Deactivate()
+        {
+        }
+  
+
 
         #endregion
 

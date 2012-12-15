@@ -9,31 +9,24 @@ namespace GameStateManagementSample.Entities
 {
     class AnimationEntity : GameEntity
     {
-        Texture2D SpriteStrip;
+        protected float scale;
+        protected Int32 elapsedTime;
+        protected Int32 FrameTime;
+        protected Int32 FrameCount;
+        protected Int32 currentFrame;
+        protected Color Color;
+        protected Rectangle sourceRect;
+        protected Rectangle destinationRect;
+        protected Int32 FrameWidth;
+        protected Int32 FrameHeight;
 
-        float scale;
-        Int32 elapsedTime;
-        Int32 FrameTime;
-        Int32 FrameCount;
-        Int32 currentFrame;
-        Color color;
-        Rectangle sourceRect;
-        Rectangle destinationRect;
-        Int32 FrameWidth;
-        Int32 FrameHeight;
-
-        Boolean Looping;
+        protected Boolean Looping;
 
 
-        public void Initialize(Texture2D texture, Vector2 position, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
+        public virtual void Initialize(Vector2 position)
         {
-            // Keep a local copy of the values passed in
-            this.color = color;
+
             this.Position = position;
-            this.FrameWidth = frameWidth;
-            this.FrameHeight = frameHeight;
-            this.FrameCount = frameCount;
-            this.SpriteStrip = texture;
 
             // Set the time to zero
             elapsedTime = 0;
@@ -43,8 +36,21 @@ namespace GameStateManagementSample.Entities
             Active = true;
         }
 
+        public virtual void InitializeAnimation(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
+        {
+            // Keep a local copy of the values passed in
+            this.PlayerTexture = texture;
+            this.FrameWidth = frameWidth;
+            this.FrameHeight = frameHeight;
+            this.FrameCount = frameCount;
+            this.FrameTime = frametime;
+            this.Color = color;
+            this.scale = scale;
+            this.Looping = looping;
+        }
 
-        public void Update(GameTime gameTime)
+
+        public virtual void Update(GameTime gameTime)
         {
             // Do not update the game if we are not active
             if (!Active)
@@ -84,14 +90,23 @@ namespace GameStateManagementSample.Entities
 
 
         // Draw the Animation Strip 
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             // Only draw the animation when we are active
             if (Active)
             {
-                spriteBatch.Draw(SpriteStrip, destinationRect, sourceRect, color);
+                spriteBatch.Draw(PlayerTexture, destinationRect, sourceRect, Color);
+                
             }
-        } 
+        }
+
+        public virtual void Deactivate()
+        {
+            this.Active = false;
+        }
+  
+
+ 
 
 
     }

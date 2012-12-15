@@ -17,6 +17,8 @@ using Microsoft.Xna.Framework.Input;
 using GameStateManagement;
 using System.Diagnostics;
 using GameStateManagementSample.Entities;
+using Microsoft.Devices.Sensors;
+using System.Collections.Generic;
 #endregion
 
 namespace GameStateManagementSample
@@ -32,11 +34,26 @@ namespace GameStateManagementSample
 
         ContentManager content;
         SpriteFont gameFont;
+        float screenWidth = 480;
+        float screenHeight = 800;
+        float rotationValue;
+        const Int16 fixedSpeed = 1;
+        float dynamicSpeed;
+        Int16 bananaCounter;
 
         Vector2 playerPosition = new Vector2(100, 100);
         Vector2 enemyPosition = new Vector2(100, 100);
 
-        Random random = new Random();
+        List<BananaEntity> bananaVector = new List<BananaEntity>();
+
+        //time management
+        private float time_between_frame;
+        private float time_last_frame;
+
+        //banana texture
+        Texture2D bananaTexture;
+
+        Random random;
 
         float pauseAlpha;
 
@@ -46,6 +63,13 @@ namespace GameStateManagementSample
         ParallaxingBackground cloudTexture;
         Texture2D mainBackground;
 
+        PlayerEntity player;
+
+        Motion MotionSensor;
+
+        //rotation movement flags
+        Boolean moveRight;
+        Boolean moveLeft;
 
         //Vector2 cloudsPosition = Vector2.Zero;
         //float cloudSpeed = 0.5f;
@@ -61,8 +85,23 @@ namespace GameStateManagementSample
         /// </summary>
         public GameplayScreen()
         {
+            random = new Random((int)screenWidth - 20);
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+
+            //init motion sensor
+            MotionSensor = new Motion();
+
+            //set time boarder for player sprite animation update
+            time_between_frame = 0.2f;
+            time_last_frame = 0f;
+
+           
+            //set dynamicSpeed initial value
+            dynamicSpeed = fixedSpeed;
+
+            //init player
+            player = new PlayerEntity();
 
             pauseAction = new InputAction(
                 new Buttons[] { Buttons.Start, Buttons.Back },
@@ -91,8 +130,30 @@ namespace GameStateManagementSample
                 grassTexture = new ParallaxingBackground();
 
                 mainBackground = content.Load<Texture2D>("water");
-                grassTexture.Initialize(content, "grass2", 800, 1);
-                cloudTexture.Initialize(content, "clouds", 800, 3);
+                grassTexture.Initialize(content, "grass2", 800, -(fixedSpeed));
+                cloudTexture.Initialize(content, "clouds", 800, -(fixedSpeed*3));
+
+                //Setup sensors
+                if (MotionSensor != null)
+                {
+                    MotionSensor.CurrentValueChanged += new EventHandler<SensorReadingEventArgs<MotionReading>>(MotionSensor_CurrentValueChanged);
+                    MotionSensor.Start();
+                }
+
+                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk");
+                //set banana texture
+                bananaTexture = content.Load<Texture2D>("bananas_single");
+
+
+                //set player position to the bottom
+                Vector2 playerPosition = new Vector2(screenWidth / 2,
+                screenHeight/2);
+
+                player.Initialize(playerPosition);
+                player.InitializeAnimation(playerTexture, playerTexture.Width/20, playerTexture.Height, 20, 1, Color.White, 1, true);
+
+
+
 
                 // A real game would probably have more content than this sample, so
                 // it would take longer to load. We simulate that by delaying for a
@@ -112,6 +173,39 @@ namespace GameStateManagementSample
                 enemyPosition = (Vector2)Microsoft.Phone.Shell.PhoneApplicationService.Current.State["EnemyPosition"];
             }
 #endif
+        }
+
+        void MotionSensor_CurrentValueChanged(object sender, SensorReadingEventArgs<MotionReading> e)
+        {
+            //movement detected - rotate the player
+            rotationValue = e.SensorReading.Attitude.Roll;
+
+       //     Debug.WriteLine("Rotation Value: " + rotationValue);
+      //      Debug.WriteLine("Quaternion Value: " + e.SensorReading.Attitude.Quaternion);
+            Debug.WriteLine("RollValue: " + e.SensorReading.Attitude.Roll);
+           
+
+            if(rotationValue >= -0.5 && rotationValue <= 1.9){
+  //              player.Rotation= rotationValue+90;
+            }
+
+            if (rotationValue > 0.2)
+            {
+                moveLeft = false;
+                moveRight = true;
+            }
+            else if (rotationValue < -0.2)
+            {
+
+                moveLeft = true;
+                moveRight = false;
+            }
+            else
+            {
+                moveLeft = false;
+                moveRight = false;
+            }
+           
         }
 
 
@@ -153,7 +247,79 @@ namespace GameStateManagementSample
         public override void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                        bool coveredByOtherScreen)
         {
+
+            
+           // dynamicSpeed = fixedSpeed + gameTime.ElapsedGameTime.Milliseconds/ 10000.0f;
+
+            time_last_frame += (float)gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
+            if (time_last_frame >= time_between_frame)
+            {
+                //   player.Update(gameTime);
+                time_last_frame = 0f;
+                player.Update(gameTime);
+                Debug.WriteLine("Tick");
+
+                //adding banana
+                if (bananaCounter > 10)
+                {
+                    BananaEntity b = new BananaEntity();
+                    b.Initialize(new Vector2(random.Next(460) + 10, 800));
+                    b.InitializeAnimation(bananaTexture, bananaTexture.Width / 8, bananaTexture.Height, 8, 1, Color.White, 1, true);
+                    bananaVector.Add(b);
+                    bananaCounter = 0;
+                }
+
+                //update bananas
+                foreach (BananaEntity ba in bananaVector)
+                {
+                    ba.Update(gameTime);
+                }
+                bananaCounter++;
+            }
+
+            foreach (BananaEntity b in bananaVector)
+            {
+                
+                if (b.Position.Y < 0)
+                {
+                    b.Deactivate();
+                    bananaVector.Remove(b);
+                }
+                else
+                {
+                    b.Update(gameTime);
+                b.Position.Y -= fixedSpeed;
+                }
+            }
+
+           
+           
+            //player movement
+            if (moveRight)
+            {
+                player.Position.X += 1f;
+            }
+
+            if (moveLeft)
+            {
+                player.Position.X -= 1f;
+            }
+
+            //destroy player entity if it falls of the ground
+            if (player.Position.X > ScreenManager.Game.GraphicsDevice.Viewport.Width || player.Position.X < 10)
+            {
+                //deactivate player entity
+                player.Active = false;
+
+                //play Animation
+            }
+
+           // player.Update(gameTime);
+
             base.Update(gameTime, otherScreenHasFocus, false);
+
+
+
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             if (coveredByOtherScreen)
@@ -273,8 +439,20 @@ namespace GameStateManagementSample
             //backgrounds
             spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
             grassTexture.Draw(spriteBatch);
+
+            
             cloudTexture.Draw(spriteBatch);
-           
+
+            //draw player
+            player.Draw(spriteBatch);
+
+            //draw bananas
+            foreach (BananaEntity b in bananaVector)
+            {
+
+                b.Draw(spriteBatch);
+            }
+
 
             spriteBatch.End();
 
