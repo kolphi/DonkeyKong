@@ -11,6 +11,7 @@ using System;
 using GameStateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace GameStateManagementSample
 {
@@ -41,8 +42,14 @@ namespace GameStateManagementSample
             // When tapped we need to toggle the value and regenerate the text
             value = !value;
             GenerateText();
-
+            Debug.WriteLine("onTapped!!!");
+            Debug.WriteLine("VALUE" + value);
             base.OnTapped();
+        }
+
+        public bool getValue()
+        {
+            return value;
         }
 
         /// <summary>

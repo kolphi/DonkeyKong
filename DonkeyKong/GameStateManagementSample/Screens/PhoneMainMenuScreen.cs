@@ -16,8 +16,13 @@ namespace GameStateManagementSample
 {
     class PhoneMainMenuScreen : PhoneMenuScreen
     {
+
+
+       public bool musicState;
+
         public PhoneMainMenuScreen()
             : base("Main Menu")
+
         {
             // Create a button to start the game
             Button playButton = new Button("Play");
@@ -33,6 +38,8 @@ namespace GameStateManagementSample
             BooleanButton musicButton = new BooleanButton("Music", true);
             musicButton.Tapped += musicButton_Tapped;
             MenuButtons.Add(musicButton);
+            //musicState = musicButton.getValue();
+            
         }
 
         void playButton_Tapped(object sender, EventArgs e)
@@ -53,11 +60,12 @@ namespace GameStateManagementSample
         void musicButton_Tapped(object sender, EventArgs e)
         {
             BooleanButton button = sender as BooleanButton;
+            musicState = button.getValue();
 
             // In a real game, you'd want to store away the value of 
             // the button to turn off music here. :)
-            Debug.WriteLine("Music clicked");
-            //Debug.WriteLine(button.GenerateText());
+            Debug.WriteLine("MUSICSTATE" + musicState);
+           // Debug.WriteLine(button.getValue());
             
         }
 

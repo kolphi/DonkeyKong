@@ -19,6 +19,7 @@ using System.Diagnostics;
 using GameStateManagementSample.Entities;
 using Microsoft.Devices.Sensors;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace GameStateManagementSample
@@ -74,6 +75,8 @@ namespace GameStateManagementSample
         //Vector2 cloudsPosition = Vector2.Zero;
         //float cloudSpeed = 0.5f;
 
+        Song playMusic;
+        PhoneMainMenuScreen phm = new PhoneMainMenuScreen();
 
         #endregion
 
@@ -107,6 +110,8 @@ namespace GameStateManagementSample
                 new Buttons[] { Buttons.Start, Buttons.Back },
                 new Keys[] { Keys.Escape },
                 true);
+
+            
         }
 
 
@@ -137,12 +142,12 @@ namespace GameStateManagementSample
                 if (MotionSensor != null)
                 {
                     MotionSensor.CurrentValueChanged += new EventHandler<SensorReadingEventArgs<MotionReading>>(MotionSensor_CurrentValueChanged);
-                    MotionSensor.Start();
+                    //MotionSensor.Start();
                 }
 
-                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk");
+                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk_raster2");
                 //set banana texture
-                bananaTexture = content.Load<Texture2D>("bananas_single");
+                bananaTexture = content.Load<Texture2D>("bananas_single_raster");
 
 
                 //set player position to the bottom
@@ -152,8 +157,12 @@ namespace GameStateManagementSample
                 player.Initialize(playerPosition);
                 player.InitializeAnimation(playerTexture, playerTexture.Width/20, playerTexture.Height, 20, 1, Color.White, 1, true);
 
-
-
+                
+                if (phm.musicState == false)
+                {                    
+                    playMusic = content.Load<Song>("backMusic");
+                    PlaySong(playMusic);
+                }
 
                 // A real game would probably have more content than this sample, so
                 // it would take longer to load. We simulate that by delaying for a
@@ -173,6 +182,19 @@ namespace GameStateManagementSample
                 enemyPosition = (Vector2)Microsoft.Phone.Shell.PhoneApplicationService.Current.State["EnemyPosition"];
             }
 #endif
+        }
+
+        private void PlaySong(Song playMusic)
+        {
+            try
+            {
+                // Play the music
+                MediaPlayer.Play(playMusic);
+
+                // Loop the currently playing song
+                MediaPlayer.IsRepeating = true;
+            }
+            catch { }
         }
 
         void MotionSensor_CurrentValueChanged(object sender, SensorReadingEventArgs<MotionReading> e)
@@ -247,8 +269,7 @@ namespace GameStateManagementSample
         public override void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                        bool coveredByOtherScreen)
         {
-
-            
+ 
            // dynamicSpeed = fixedSpeed + gameTime.ElapsedGameTime.Milliseconds/ 10000.0f;
 
             time_last_frame += (float)gameTime.ElapsedGameTime.Milliseconds / 1000.0f;

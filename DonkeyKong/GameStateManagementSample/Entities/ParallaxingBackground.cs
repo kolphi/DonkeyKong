@@ -46,11 +46,6 @@ namespace GameStateManagementSample.Entities
                   if (speed <= 0)
                   {
                        // Check the texture is out of view then put that texture at the end of the screen
-                      //if (positions[i].X <= -backgroundTexture.Width)
-                      //{
-                      //    positions[i].X = backgroundTexture.Width * (positions.Length - 1);
-                      //}
-
                       if (positions[i].Y <= -backgroundTexture.Height)
                       {
                           positions[i].Y = backgroundTexture.Height * (positions.Length - 1);
@@ -60,7 +55,6 @@ namespace GameStateManagementSample.Entities
                  else
                  {
                        // Check if the texture is out of view then position it to the start of the screen 
-
                      if (positions[i].Y >= backgroundTexture.Height * (positions.Length - 1))
                      {
                          positions[i].Y = -backgroundTexture.Height;
