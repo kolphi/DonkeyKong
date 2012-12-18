@@ -11,6 +11,10 @@ namespace GameStateManagementSample.Entities
   
     abstract class GameEntity
     {
+
+        //BoundingBox for collision detection
+        protected BoundingBox boundingBox;
+
         // Animation representing the player
         public Texture2D PlayerTexture;
 
@@ -27,6 +31,9 @@ namespace GameStateManagementSample.Entities
             private set { this.Width = value; }
         }
 
+      
+
+
         // Get the height of the player ship
         public Int32 Height
         {
@@ -39,12 +46,30 @@ namespace GameStateManagementSample.Entities
         {
         }
 
+      /*  public virtual Rectangle BoundingBox()
+        {
+             
+                return new Rectangle(
+
+                    (int)Position.X,
+
+                    (int)Position.Y,
+
+                    //texture width has to be devided by number of frames to get the size of 1 frame
+                    PlayerTexture.Width,
+
+                    PlayerTexture.Height);
+
+            
+        }
+*/
+
 
         public virtual void Update(GameTime gameTime)
         {
         }
 
-        public virtual void Draw()
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
         }
 

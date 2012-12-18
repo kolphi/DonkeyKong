@@ -45,24 +45,7 @@ namespace GameStateManagementSample.Entities
             
    
         }
-        /*
-        public void InitializeAnimation(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
-        {
-            //set player texture
-            PlayerTexture = texture;
-
-            
-            //set animation parameters
-            this.FrameWidth = frameWidth;
-            this.FrameHeight = frameHeight;
-            this.FrameCount = frameCount;
-            this.FrameTime = frametime;
-            this.Color = color;
-            this.scale = scale;
-            this.Looping = looping;
-            
-        }
-        */
+      
         
         public override void Draw(SpriteBatch spriteBatch)
         {

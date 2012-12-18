@@ -7,8 +7,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GameStateManagementSample.Entities
 {
-    class AnimationEntity : GameEntity
+    class AnimationEntity : GameEntity 
     {
+       
         protected float scale;
         protected Int32 elapsedTime;
         protected Int32 FrameTime;
@@ -25,7 +26,7 @@ namespace GameStateManagementSample.Entities
 
         public virtual void Initialize(Vector2 position)
         {
-
+            this.boundingBox = new BoundingBox();
             this.Position = position;
 
             // Set the time to zero
@@ -36,8 +37,29 @@ namespace GameStateManagementSample.Entities
             Active = true;
         }
 
+        public virtual Rectangle BoundingBox
+        {
+            get
+            {
+
+                return new Rectangle(
+
+                    (int)Position.X,
+
+                    (int)Position.Y,
+
+                    //texture width has to be devided by number of frames to get the size of 1 frame
+                    PlayerTexture.Width/FrameCount,
+
+                    PlayerTexture.Height);
+
+            }
+
+        }
+
         public virtual void InitializeAnimation(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
         {
+
             // Keep a local copy of the values passed in
             this.PlayerTexture = texture;
             this.FrameWidth = frameWidth;
@@ -47,6 +69,9 @@ namespace GameStateManagementSample.Entities
             this.Color = color;
             this.scale = scale;
             this.Looping = looping;
+
+            
+           
         }
 
 
