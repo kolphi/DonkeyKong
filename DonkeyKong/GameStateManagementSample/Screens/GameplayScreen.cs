@@ -20,6 +20,7 @@ using GameStateManagementSample.Entities;
 using Microsoft.Devices.Sensors;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
+using GameStateManagementSample.Screens;
 #endregion
 
 namespace GameStateManagementSample
@@ -44,6 +45,8 @@ namespace GameStateManagementSample
         const Int16 fixedSpeed = 1;
         float dynamicSpeed;
         Int16 bananaCounter;
+        Int16 barrelCounter;
+        Int16 puddleCounter;
 
         //graphics for HUD
         Texture2D headUpDisplayTexture;
@@ -56,7 +59,9 @@ namespace GameStateManagementSample
 
         //init vectors for bananas and obstacles
         List<BananaEntity> bananaVector = new List<BananaEntity>();
-        List<ObstacleEntity> obstacleVector = new List<ObstacleEntity>();
+        List<BarrelEntity> barrelVector = new List<BarrelEntity>();
+        List<WaterEntity> waterVector = new List<WaterEntity>();
+        
 
         //time management
         private float time_between_frame;
@@ -64,6 +69,8 @@ namespace GameStateManagementSample
 
         //banana texture
         Texture2D bananaTexture;
+        Texture2D barrelTexture;
+        Texture2D puddleTexture;
 
         Random random;
 
@@ -86,6 +93,8 @@ namespace GameStateManagementSample
         //Vector2 cloudsPosition = Vector2.Zero;
         //float cloudSpeed = 0.5f;
 
+        SpriteBatch spriteBatch;
+
         Song playMusic;
         PhoneMainMenuScreen phm = new PhoneMainMenuScreen();
 
@@ -102,8 +111,6 @@ namespace GameStateManagementSample
             random = new Random((int)screenWidth - 20);
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
-
-           
 
             //init game start score with 0
             gameScore = 0;
@@ -141,7 +148,7 @@ namespace GameStateManagementSample
                 if (content == null)
                     content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-                gameFont = content.Load<SpriteFont>("gamefont");
+                gameFont = content.Load<SpriteFont>("menufont");
 
                 //grassTexture = content.Load<Texture2D>("grass1");
                 //cloudsTexture = content.Load<Texture2D>("clouds");
@@ -155,7 +162,7 @@ namespace GameStateManagementSample
                 cloudTexture.Initialize(content, "clouds", 800, -(fixedSpeed*3));
 
                 //set HUD textures
-                headUpDisplayTexture = content.Load<Texture2D>("HUD");
+                headUpDisplayTexture = content.Load<Texture2D>("HUD2");
                 heart1LiveTexture = content.Load<Texture2D>("Heart_1");
                 heart2LiveTexture = content.Load<Texture2D>("Heart_2");
                 heartfullLiveTexture= content.Load<Texture2D>("Heart_3");
@@ -167,9 +174,11 @@ namespace GameStateManagementSample
                     MotionSensor.Start();
                 }
 
-                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk_raster2");
+                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk_raster3");
                 //set banana texture
-                bananaTexture = content.Load<Texture2D>("bananas_single_raster");
+                bananaTexture = content.Load<Texture2D>("bananas_single_raster2");
+                barrelTexture = content.Load<Texture2D>("barrels2");
+                puddleTexture = content.Load<Texture2D>("small_water");
 
 
                 //set player position to the bottom
@@ -318,23 +327,59 @@ namespace GameStateManagementSample
                     bananaCounter = 0;
                 }
 
+                //adding barrel
+                if (barrelCounter > 40)
+                {
+                    BarrelEntity o = new BarrelEntity();
+                    o.Initialize(new Vector2(random.Next(440) + 10, 800));
+                    o.InitializeAnimation(barrelTexture, barrelTexture.Width / 8, barrelTexture.Height, 8, 1, Color.White, 1, true);
+                    barrelVector.Add(o);
+                    barrelCounter = 0;
+                }
+
+                if (puddleCounter > 60)
+                {
+                    WaterEntity w = new WaterEntity();
+                    w.Initialize(new Vector2(random.Next(350) + 10, 800));
+                    w.InitializeAnimation(puddleTexture, puddleTexture.Width / 3, puddleTexture.Height, 3, 1, Color.White, 1, true);
+                    waterVector.Add(w);
+                    puddleCounter = 0;
+                }
+
                 //update bananas
                 foreach (BananaEntity ba in bananaVector)
                 {
                     ba.Update(gameTime);
                 }
                 bananaCounter++;
+
+                //update barrels
+                foreach (BarrelEntity bar in barrelVector)
+                {
+                    bar.Update(gameTime);
+                }
+                barrelCounter++;
+
+                //update puddles
+                foreach (WaterEntity wa in waterVector)
+                {
+                    wa.Update(gameTime);
+                }
+                puddleCounter++;
+
+                
             }
 
             checkCollisions();
 
             foreach (BananaEntity b in bananaVector)
             {
-                
+
                 if (b.Position.Y < 0)
                 {
                     b.Deactivate();
-                  //  bananaVector.Remove(b);
+                    //  bananaVector.Remove(b);
+
                 }
                 else
                 {
@@ -343,8 +388,36 @@ namespace GameStateManagementSample
                 }
             }
 
-          
 
+            //barrel positions
+            foreach (BarrelEntity ba in barrelVector)
+            {
+
+                if (ba.Position.Y < 0)
+                {
+                    ba.Deactivate();
+                }
+                else
+                {
+                    ba.Update(gameTime);
+                    ba.Position.Y -= fixedSpeed;
+                }
+            }
+
+            //puddle positions
+            foreach (WaterEntity w in waterVector)
+            {
+
+                if (w.Position.Y < 0)
+                {
+                    w.Deactivate();
+                }
+                else
+                {
+                    w.Update(gameTime);
+                    w.Position.Y -= fixedSpeed;
+                }
+            }
            
            
             //player movement
@@ -365,6 +438,9 @@ namespace GameStateManagementSample
                 player.Active = false;
 
                 //play Animation
+
+                showGameOverExit();
+                
             }
 
            // player.Update(gameTime);
@@ -404,7 +480,7 @@ namespace GameStateManagementSample
 
         private void showGameOverExit()
         {
-            base.ExitScreen();
+            LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new BackgroundOverScreen(), new GameOverScreen());
         }
 
         private void checkCollisions()
@@ -414,30 +490,49 @@ namespace GameStateManagementSample
             //check for collisions with bananas
             foreach (BananaEntity b in bananaVector)
             {
+                if (b.isActive()){
+               
                 if (PlayerBoundingBox.Intersects(b.BoundingBox))
                 {
                     //add points to scoreboard
                     gameScore += b.ScorePoints;
                     // deactivate to destroy it later
                     b.Deactivate();
+                    //b.Active = false;
+                   
                     
                     Debug.WriteLine("Collision: player and banana at " + b.Position.Y + ";" +b.Position.X);
                 }
+                }
 
             }
 
-            foreach (ObstacleEntity o in obstacleVector)
+            foreach (BarrelEntity bar in barrelVector)
             {
-                if (PlayerBoundingBox.Intersects(o.BoundingBox))
+                if (bar.isActive())
                 {
-                    //decrease player health
-                    player.Health--;
 
-                    //deactivate obstacle
-                    o.Deactivate();
+                    if (PlayerBoundingBox.Intersects(bar.BoundingBox))
+                    {
+                        //decrease player health
+                        player.Health -= 1;
+
+                        //deactivate obstacle
+                        bar.Deactivate();
+
+                    }
                 }
             }
 
+
+            foreach (WaterEntity water in waterVector)
+            {
+                if (PlayerBoundingBox.Intersects(water.BoundingBox))
+                {
+                    showGameOverExit();
+                    //DrawHud(spriteBatch, ScreenManager.GraphicsDevice.Viewport);
+                }
+            }
         }
 
 
@@ -523,7 +618,7 @@ namespace GameStateManagementSample
             Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
 
             // Our player and enemy are both actually just text strings.
-            SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+            spriteBatch = ScreenManager.SpriteBatch;
 
             spriteBatch.Begin();
 
@@ -531,11 +626,8 @@ namespace GameStateManagementSample
             spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
             grassTexture.Draw(spriteBatch);
 
-           
-
             //draw player
             player.Draw(spriteBatch);
-
            
             //draw bananas
             foreach (BananaEntity b in bananaVector)
@@ -545,10 +637,23 @@ namespace GameStateManagementSample
                 
             }
 
+            //draw barrels 
+            foreach (BarrelEntity o in barrelVector)
+            {
+                o.Draw(spriteBatch);
+            }
+
+            foreach (WaterEntity w in waterVector)
+            {
+                w.Draw(spriteBatch);
+            }
+
 
             //draw clouds
             cloudTexture.Draw(spriteBatch);
 
+            spriteBatch.Draw(headUpDisplayTexture, new Vector2(0, 0), Color.White);
+            spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(270, 20), Color.Yellow);
 
             //draw HUD
             DrawHud(spriteBatch, viewport);
@@ -569,24 +674,25 @@ namespace GameStateManagementSample
            // Rectangle backgroundHud = new Rectangle(0, 0, screenWidth, screenHeight);
           //  Texture2D text = new Texture2D(backgroundHud, backgroundHud.Width, backgroundHud.Height);
             spriteBatch.Draw(headUpDisplayTexture, new Vector2(0, 0), Color.White);
-            spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(viewport.Width/2, 30), Color.Black);
-
+            //spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(viewport.Width/2, 30), Color.Black);
+            spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(270, 20), Color.Yellow);
+         
             //draw hearts
             if (player.Health == 3)
             {
-                spriteBatch.Draw(heartfullLiveTexture, new Vector2(0, 0), Color.White);
+                spriteBatch.Draw(heartfullLiveTexture, new Vector2(0, 15), Color.White);
             }
             else if (player.Health == 2)
             {
-                spriteBatch.Draw(heart2LiveTexture, new Vector2(0, 0), Color.White);
+                spriteBatch.Draw(heart2LiveTexture, new Vector2(0, 15), Color.White);
 
             }
             else if (player.Health == 1)
             {
-                spriteBatch.Draw(heart1LiveTexture, new Vector2(0, 0), Color.White);
+                spriteBatch.Draw(heart1LiveTexture, new Vector2(0, 15), Color.White);
 
             }
-        
+            
         }
 
 

@@ -17,7 +17,7 @@ namespace GameStateManagementSample.Entities
 
         public BananaEntity()
         {
-            // Set the player to be active
+            // Set the banana to be active
             Active = true;
 
             Position = new Vector2(0, 0);
@@ -25,13 +25,13 @@ namespace GameStateManagementSample.Entities
         
         public override void Initialize(Vector2 position)
         {
-            // Set the starting position of the player around the middle of the screen and to the back
+            // Set the starting position of the banana
             Position = position;
 
-            // Set the player to be active
+            // Set the banana to be active
             Active = true;
 
-            // Set the player health
+            // Set the banana points
             ScorePoints = 3;
         }
 
@@ -54,5 +54,6 @@ namespace GameStateManagementSample.Entities
             this.ScorePoints = score;
         }
 
+        
     }
 }

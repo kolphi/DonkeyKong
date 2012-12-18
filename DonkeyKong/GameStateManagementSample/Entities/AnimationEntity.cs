@@ -129,9 +129,13 @@ namespace GameStateManagementSample.Entities
         {
             this.Active = false;
         }
-  
 
- 
+
+        public bool isActive()
+        {
+            return Active;
+        }
+
 
 
     }

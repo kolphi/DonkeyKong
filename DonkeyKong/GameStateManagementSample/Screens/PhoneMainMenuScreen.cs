@@ -21,7 +21,7 @@ namespace GameStateManagementSample
        public bool musicState;
 
         public PhoneMainMenuScreen()
-            : base("Main Menu")
+            : base("")
 
         {
             // Create a button to start the game

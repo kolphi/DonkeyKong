@@ -58,7 +58,7 @@ namespace GameStateManagementSample
                 if (content == null)
                     content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-                backgroundTexture = content.Load<Texture2D>("menu");
+                backgroundTexture = content.Load<Texture2D>("menu_full");
                
             }
         }
