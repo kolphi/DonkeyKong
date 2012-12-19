@@ -104,6 +104,7 @@
     <Compile Include="Screens\BackgroundScreen.cs" />
     <Compile Include="Screens\Button.cs" />
     <Compile Include="Screens\GameplayScreen.cs" />
+    <Compile Include="Screens\Label.cs" />
     <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\PhoneMainMenuScreen.cs" />
     <Compile Include="Screens\PhoneMenuScreen.cs" />

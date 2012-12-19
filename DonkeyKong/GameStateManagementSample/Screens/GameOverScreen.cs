@@ -2,15 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameStateManagementSample.Screens
 {
     class GameOverScreen : PhoneMenuScreen
     {
        
-        public GameOverScreen()
+        public GameOverScreen(Int32 scorePoints)
             : base("")
         {
+
+            // Create the "Menu" and "Exit" buttons for the screen
+            //Button pauseButton = new Button(scorePoints.ToString());
+            ////pauseButton.Tapped += menuButton_Tapped;
+            //MenuButtons.Add(pauseButton);
+
+            Label lbl = new Label("Your score: " + scorePoints.ToString());
+            LabelList.Add(lbl);
+
             // Create the "Menu" and "Exit" buttons for the screen
             Button menuButton = new Button("Menu");
             menuButton.Tapped += menuButton_Tapped;

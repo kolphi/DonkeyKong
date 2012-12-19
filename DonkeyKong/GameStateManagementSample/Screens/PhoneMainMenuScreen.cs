@@ -31,9 +31,9 @@ namespace GameStateManagementSample
 
             // Create two buttons to toggle sound effects and music. This sample just shows one way
             // of making and using these buttons; it doesn't actually have sound effects or music
-            BooleanButton sfxButton = new BooleanButton("Sound Effects", true);
-            sfxButton.Tapped += sfxButton_Tapped;
-            MenuButtons.Add(sfxButton);
+            //BooleanButton sfxButton = new BooleanButton("Sound Effects", true);
+            //sfxButton.Tapped += sfxButton_Tapped;
+            //MenuButtons.Add(sfxButton);
 
             BooleanButton musicButton = new BooleanButton("Music", true);
             musicButton.Tapped += musicButton_Tapped;
@@ -46,7 +46,7 @@ namespace GameStateManagementSample
         {
             
             // When the "Play" button is tapped, we load the GameplayScreen
-            LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new GameplayScreen());
+            LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new GameplayScreen(musicState));
         }
 
         void sfxButton_Tapped(object sender, EventArgs e)

@@ -66,7 +66,7 @@ namespace GameStateManagementSample
         //init vectors for bananas and obstacles
         List<BananaEntity> bananaVector = new List<BananaEntity>();
         List<BarrelEntity> barrelVector = new List<BarrelEntity>();
-        List<WaterEntity> waterVector = new List<WaterEntity>();
+        List<ObstacleEntity> puddleVector = new List<ObstacleEntity>();
         
 
         //time management
@@ -102,7 +102,7 @@ namespace GameStateManagementSample
         SpriteBatch spriteBatch;
 
         Song playMusic;
-        PhoneMainMenuScreen phm = new PhoneMainMenuScreen();
+        bool MusicState;
 
         #endregion
 
@@ -112,12 +112,14 @@ namespace GameStateManagementSample
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GameplayScreen()
+        public GameplayScreen(bool musicState)
         {
             
             random = new Random((int)screenHeight/2);
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+
+            MusicState = musicState;
 
             //init game start score with 0
             gameScore = 0;
@@ -190,7 +192,7 @@ namespace GameStateManagementSample
                 //set banana texture
                 bananaTexture = content.Load<Texture2D>("bananas_single_raster2");
                 barrelTexture = content.Load<Texture2D>("barrels2");
-                puddleTexture = content.Load<Texture2D>("small_water");
+                puddleTexture = content.Load<Texture2D>("puddle2");
 
 
                 //set player position to the bottom
@@ -201,7 +203,7 @@ namespace GameStateManagementSample
                 player.InitializeAnimation(playerTexture, playerTexture.Width/20, playerTexture.Height, 20, 1, Color.White, 1, true);
 
                 
-                if (phm.musicState == false)
+                if (MusicState == true)
                 {                    
                     playMusic = content.Load<Song>("backMusic");
                     PlaySong(playMusic);
@@ -378,10 +380,10 @@ namespace GameStateManagementSample
                 //adding puddle
                 if (puddleCounter > 60)
                 {
-                    WaterEntity w = new WaterEntity();
+                    ObstacleEntity w = new ObstacleEntity();
                     w.Initialize(new Vector2(random.Next(350) + 30, 800));
-                    w.InitializeAnimation(puddleTexture, puddleTexture.Width / 3, puddleTexture.Height, 3, 1, Color.White, 1, true);
-                    waterVector.Add(w);
+                    w.initializeTexture(puddleTexture);
+                    puddleVector.Add(w);
                     puddleCounter = 0;
                 }
 
@@ -405,7 +407,7 @@ namespace GameStateManagementSample
                     
 
                     //update puddles
-                    foreach (WaterEntity wa in waterVector)
+                    foreach (ObstacleEntity wa in puddleVector)
                     {
                         wa.Update(gameTime);
                     }
@@ -458,7 +460,7 @@ namespace GameStateManagementSample
             }
 
             //puddle positions
-            foreach (WaterEntity w in waterVector)
+            foreach (ObstacleEntity w in puddleVector)
             {
 
                 if (w.Position.Y < 0)
@@ -533,7 +535,7 @@ namespace GameStateManagementSample
 
         private void showGameOverExit()
         {
-            LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new BackgroundOverScreen(), new GameOverScreen());
+            LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new BackgroundOverScreen(), new GameOverScreen(gameScore));
         }
 
         private void checkCollisions()
@@ -578,7 +580,7 @@ namespace GameStateManagementSample
             }
 
 
-            foreach (WaterEntity water in waterVector)
+            foreach (ObstacleEntity water in puddleVector)
             {
                 if (PlayerBoundingBox.Intersects(water.BoundingBox))
                 {
@@ -696,7 +698,7 @@ namespace GameStateManagementSample
                 o.Draw(spriteBatch);
             }
 
-            foreach (WaterEntity w in waterVector)
+            foreach (ObstacleEntity w in puddleVector)
             {
                 w.Draw(spriteBatch);
             }

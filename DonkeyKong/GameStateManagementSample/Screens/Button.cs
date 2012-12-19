@@ -89,7 +89,7 @@ namespace GameStateManagementSample
         /// <summary>
         /// The color of the button border.
         /// </summary>
-        public Color BorderColor = new Color(200, 200, 200);
+        public Color BorderColor = new Color(255, 249, 34);
 
         /// <summary>
         /// The color of the button background.
@@ -99,7 +99,7 @@ namespace GameStateManagementSample
         /// <summary>
         /// The color of the text.
         /// </summary>
-        public Color TextColor = Color.White;
+        public Color TextColor = new Color(255, 249, 34);
 
         /// <summary>
         /// The opacity of the button.

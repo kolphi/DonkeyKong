@@ -25,7 +25,7 @@ namespace GameStateManagementSample.Entities
 
             // If we divide the screen with the texture height then we can determine
             // the number of tiles need. We add 1 to it so that we won't have a gap in the tiling
-            positions = new Vector2[screenHeight / backgroundTexture.Height + 1];
+            positions = new Vector2[screenHeight / backgroundTexture.Height + 3];
 
             // Set the initial positions of the parallaxing background
             for (int i = 0; i < positions.Length; i++)

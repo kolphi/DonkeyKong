@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
+using GameStateManagementSample.Screens;
 
 namespace GameStateManagementSample
 {
@@ -24,6 +25,7 @@ namespace GameStateManagementSample
     {
         List<Button> menuButtons = new List<Button>();
         string menuTitle;
+        List<Label> labelList = new List<Label>();
 
         InputAction menuCancel;
 
@@ -33,6 +35,11 @@ namespace GameStateManagementSample
         protected IList<Button> MenuButtons
         {
             get { return menuButtons; }
+        }
+
+        protected IList<Label> LabelList
+        {
+            get { return labelList; }
         }
 
         /// <summary>
@@ -57,7 +64,7 @@ namespace GameStateManagementSample
         {
             // When the screen is activated, we have a valid ScreenManager so we can arrange
             // our buttons on the screen
-            float y = 140f;
+            float y = 170f;
             float center = ScreenManager.GraphicsDevice.Viewport.Bounds.Center.X;
             for (int i = 0; i < MenuButtons.Count; i++)
             {
@@ -65,6 +72,14 @@ namespace GameStateManagementSample
 
                 b.Position = new Vector2(center - b.Size.X / 2, y);
                 y += b.Size.Y * 1.5f;
+            }
+
+            for (int i = 0; i < LabelList.Count; i++)
+            {
+                Label l = LabelList[i];
+
+                l.Position = new Vector2(center - l.Size.Y, 400);
+                y += l.Size.Y * 1.5f;
             }
 
             base.Activate(instancePreserved);
@@ -77,6 +92,8 @@ namespace GameStateManagementSample
             {
                 b.Alpha = TransitionAlpha;
             }
+
+           
 
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
         }
@@ -124,6 +141,9 @@ namespace GameStateManagementSample
             // Draw all of the buttons
             foreach (Button b in menuButtons)
                 b.Draw(this);
+
+            foreach (Label l in labelList)
+                l.Draw(this);
 
             // Make the menu slide into place during transitions, using a
             // power curve to make things look more interesting (this makes
