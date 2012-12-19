@@ -36,48 +36,48 @@ namespace GameStateManagementSample
     {
         #region Fields
 
-        ContentManager content;
-        SpriteFont gameFont;
+       private ContentManager content;
+      private  SpriteFont gameFont;
         
-        Int32 gameScore;
-        
-        Int16 screenWidth = 480;
-        Int16 screenHeight = 800;
-        float rotationValue;
-        const Int16 fixedSpeed = 1;
-        float dynamicSpeed;
+       private Int32 gameScore;
+
+       private Int16 screenWidth = 480;
+       private Int16 screenHeight = 800;
+       private float rotationValue;
+       private const Int16 fixedSpeed = 1;
+       private float dynamicSpeed;
 
         //enum for current animation
         enum MoveState { WALK = 1, RIGHT, LEFT, JUMP};
         MoveState moveState;
 
         //for limiting creation of new objects
-        Int16 bananaCounter;
-        Int16 barrelCounter;
-        Int16 puddleCounter;
-        Int16 heartCounter;
+        private Int16 bananaCounter;
+        private Int16 barrelCounter;
+        private Int16 puddleCounter;
+        private Int16 heartCounter;
         
         //for slowing animation of objects other than player
-        Int16 animationCounter;
+        private Int16 animationCounter;
 
         //graphics for HUD
-        Texture2D headUpDisplayTexture;
-        Texture2D heart1LiveTexture;
-        Texture2D heart2LiveTexture;
-        Texture2D heartfullLiveTexture;
+        private Texture2D headUpDisplayTexture;
+        private Texture2D heart1LiveTexture;
+        private Texture2D heart2LiveTexture;
+        private Texture2D heartfullLiveTexture;
 
-        Texture2D redDotTexture;
-        Texture2D greenDotTexture;
+        private Texture2D redDotTexture;
+        private Texture2D greenDotTexture;
 
 
-        Vector2 playerPosition = new Vector2(100, 100);
-        Vector2 enemyPosition = new Vector2(100, 100);
+        private Vector2 playerPosition = new Vector2(100, 100);
+        private Vector2 enemyPosition = new Vector2(100, 100);
 
         //init vectors for bananas and obstacles and rewards
-        List<BananaEntity> bananaVector = new List<BananaEntity>();
-        List<BarrelEntity> barrelVector = new List<BarrelEntity>();
-        List<ObstacleEntity> puddleVector = new List<ObstacleEntity>();
-        List<RewardEntity> heartVector = new List<RewardEntity>();
+        private List<BananaEntity> bananaVector = new List<BananaEntity>();
+        private List<BarrelEntity> barrelVector = new List<BarrelEntity>();
+        private List<ObstacleEntity> puddleVector = new List<ObstacleEntity>();
+        private List<RewardEntity> heartVector = new List<RewardEntity>();
         
 
         //time management
@@ -85,51 +85,52 @@ namespace GameStateManagementSample
         private float time_last_frame;
 
         //banana texture
-        Texture2D bananaTexture;
-        Texture2D barrelTexture;
-        Texture2D puddleTexture;
-        Texture2D heartTexture;
+        private Texture2D bananaTexture;
+        private Texture2D barrelTexture;
+        private Texture2D puddleTexture;
+        private Texture2D heartTexture;
 
-        Random random;
+        private Random random;
 
         float pauseAlpha;
 
-        InputAction pauseAction;
+        private InputAction pauseAction;
 
-        ParallaxingBackground grassTexture;
-        ParallaxingBackground cloudTexture;
-        Texture2D mainBackground;
+        //textures
+        private ParallaxingBackground grassTexture;
+        private ParallaxingBackground cloudTexture;
+        private Texture2D mainBackground;
 
         //player variables
-        PlayerEntity player;
+        protected PlayerEntity player;
 
-        Texture2D playerTexture;
-        Texture2D playerTextureWalkLeft;
-        Texture2D playerTextureWalkRight;
-        Texture2D playerTextureBurstMode;
+        private Texture2D playerTexture;
+        private Texture2D playerTextureWalkLeft;
+        private Texture2D playerTextureWalkRight;
+        private Texture2D playerTextureBurstMode;
 
 
-        Motion MotionSensor;
+        protected Motion MotionSensor;
 
         //rotation movement flags
-        Boolean moveRight;
-        Boolean moveLeft;
-        Boolean moveNormal;
+        private Boolean moveRight;
+        private Boolean moveLeft;
+        private Boolean moveNormal;
 
         //RushMode Variables
-        Boolean rushMode;
-        Boolean cooldownActive;
-        Int16 cooldownCounter;
-        Int16 rushModeCounter;
+        private Boolean rushMode;
+        private Boolean cooldownActive;
+        private Int16 cooldownCounter;
+        private Int16 rushModeCounter;
 
         //Vector2 cloudsPosition = Vector2.Zero;
         //float cloudSpeed = 0.5f;
 
-        SpriteBatch spriteBatch;
+        private SpriteBatch spriteBatch;
 
         //sound variables
-        Song playMusic;
-        Boolean MusicState;
+        private Song playMusic;
+        private Boolean MusicState;
 
         #endregion
 
@@ -947,7 +948,7 @@ namespace GameStateManagementSample
             cloudTexture.Draw(spriteBatch);
 
             spriteBatch.Draw(headUpDisplayTexture, new Vector2(0, 0), Color.White);
-            spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(270, 20), Color.Yellow);
+            spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(160, 20), Color.Yellow);
 
             //draw HUD
             DrawHud(spriteBatch, viewport);
@@ -972,12 +973,12 @@ namespace GameStateManagementSample
             //draw RushModeState
             if (cooldownActive)
             {
-                spriteBatch.Draw(redDotTexture, new Vector2(160, 30), Color.White);
+                spriteBatch.Draw(redDotTexture, new Vector2(320, 10), Color.White);
 
             }
             else
             {
-                spriteBatch.Draw(greenDotTexture, new Vector2(160, 30), Color.White);
+                spriteBatch.Draw(greenDotTexture, new Vector2(320, 10), Color.White);
             }
 
             //spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(viewport.Width/2, 30), Color.Black);
