@@ -27,12 +27,12 @@ namespace GameStateManagementSample.Entities
 
                 return new Rectangle(
 
-                    (int)Position.X+10,
+                    (int)Position.X+25,
 
-                    (int)Position.Y+10,
+                    (int)Position.Y+15,
 
                     //texture width has to be devided by number of frames to get the size of 1 frame
-                    PlayerTexture.Width-30,
+                    PlayerTexture.Width-50,
 
                     PlayerTexture.Height-30);
 
@@ -50,7 +50,7 @@ namespace GameStateManagementSample.Entities
 
         }
 
-        public void initializeTexture(Texture2D entityTexture)
+        public void InitializeTexture(Texture2D entityTexture)
         {
             this.PlayerTexture = entityTexture;
             this.FrameHeight = PlayerTexture.Height;

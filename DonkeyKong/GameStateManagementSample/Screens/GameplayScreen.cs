@@ -55,6 +55,7 @@ namespace GameStateManagementSample
         Int16 bananaCounter;
         Int16 barrelCounter;
         Int16 puddleCounter;
+        Int16 heartCounter;
         
         //for slowing animation of objects other than player
         Int16 animationCounter;
@@ -65,13 +66,18 @@ namespace GameStateManagementSample
         Texture2D heart2LiveTexture;
         Texture2D heartfullLiveTexture;
 
+        Texture2D redDotTexture;
+        Texture2D greenDotTexture;
+
+
         Vector2 playerPosition = new Vector2(100, 100);
         Vector2 enemyPosition = new Vector2(100, 100);
 
-        //init vectors for bananas and obstacles
+        //init vectors for bananas and obstacles and rewards
         List<BananaEntity> bananaVector = new List<BananaEntity>();
         List<BarrelEntity> barrelVector = new List<BarrelEntity>();
         List<ObstacleEntity> puddleVector = new List<ObstacleEntity>();
+        List<RewardEntity> heartVector = new List<RewardEntity>();
         
 
         //time management
@@ -82,6 +88,7 @@ namespace GameStateManagementSample
         Texture2D bananaTexture;
         Texture2D barrelTexture;
         Texture2D puddleTexture;
+        Texture2D heartTexture;
 
         Random random;
 
@@ -93,12 +100,14 @@ namespace GameStateManagementSample
         ParallaxingBackground cloudTexture;
         Texture2D mainBackground;
 
+        //player variables
         PlayerEntity player;
 
         Texture2D playerTexture;
         Texture2D playerTextureWalkLeft;
         Texture2D playerTextureWalkRight;
         Texture2D playerTextureBurstMode;
+
 
         Motion MotionSensor;
 
@@ -132,6 +141,10 @@ namespace GameStateManagementSample
         /// </summary>
         public GameplayScreen(bool musicState)
         {
+            //setting cooldown and rushmode counter
+            rushModeCounter = 11;
+            cooldownCounter = 30;
+
             //setup input touch gestures
             TouchPanel.DisplayHeight = 800;
             TouchPanel.DisplayWidth = 480;
@@ -211,6 +224,8 @@ namespace GameStateManagementSample
                 headUpDisplayTexture = content.Load<Texture2D>("HUD2");
                 heart1LiveTexture = content.Load<Texture2D>("Heart_1");
                 heart2LiveTexture = content.Load<Texture2D>("Heart_2");
+                redDotTexture = content.Load<Texture2D>("redDot");
+                greenDotTexture = content.Load<Texture2D>("greenDot");
                 heartfullLiveTexture= content.Load<Texture2D>("Heart_3");
 
                 //Setup sensors
@@ -228,11 +243,11 @@ namespace GameStateManagementSample
                 playerTextureBurstMode = content.Load<Texture2D>("donkey_movement_raster");
                 
                 
-                //set banana texture
+                //set obstacle&reward texture
                 bananaTexture = content.Load<Texture2D>("bananas_single_raster2");
                 barrelTexture = content.Load<Texture2D>("barrels2");
                 puddleTexture = content.Load<Texture2D>("puddle2");
-
+                heartTexture = content.Load<Texture2D>("heart");
 
                 //set player position to the bottom
                 Vector2 playerPosition = new Vector2(screenWidth / 2,
@@ -346,6 +361,7 @@ namespace GameStateManagementSample
 
                         if (!cooldownActive && !rushMode)
                         {
+                            Debug.WriteLine("-----rushModeActivated");
                             rushMode = true;
                             rushModeCounter = 11;
                             player.InitializeAnimation(playerTextureBurstMode, playerTextureBurstMode.Width / 11, playerTextureBurstMode.Height, 11, 1, Color.White, 1, false);
@@ -439,6 +455,7 @@ namespace GameStateManagementSample
                         //set rush mode off, enable cooldown
                         rushMode = false;
                         cooldownActive = true;
+                        Debug.WriteLine("---- RushModeDeactivated  -> cooldownActivated");
                         //set move state
                         moveState = MoveState.WALK;
                         //change player animation back to walk
@@ -455,10 +472,11 @@ namespace GameStateManagementSample
 
                     if (cooldownCounter < 1)
                     {
+                        Debug.WriteLine("----Cooldown deactivated");
                         //reset variables
                         cooldownActive = false;
                        
-                        cooldownCounter = 20;
+                        cooldownCounter = 30;
                     }
 
                  
@@ -475,6 +493,18 @@ namespace GameStateManagementSample
                         bananaVector.Add(b);
                         bananaCounter = 0;
                     
+                }
+
+                //adding heart
+                if (heartCounter > 150)
+                {
+
+                    RewardEntity heart = new RewardEntity();
+                    heart.Initialize(new Vector2(random.Next(360) + 60, 800));
+                    heart.InitializeTexture(heartTexture);
+                    heartVector.Add(heart);
+                    heartCounter = 0;
+
                 }
 
                 //adding barrel
@@ -494,7 +524,7 @@ namespace GameStateManagementSample
                 {
                     ObstacleEntity w = new ObstacleEntity();
                     w.Initialize(new Vector2(random.Next(350) + 30, 800));
-                    w.initializeTexture(puddleTexture);
+                    w.InitializeTexture(puddleTexture);
                     puddleVector.Add(w);
                     puddleCounter = 0;
                 }
@@ -517,13 +547,6 @@ namespace GameStateManagementSample
                         bar.Update(gameTime);
                     }
                     
-
-                    //update puddles
-                    foreach (ObstacleEntity wa in puddleVector)
-                    {
-                        wa.Update(gameTime);
-                    }
-
                     //resetting animation counter
                     animationCounter = 0;
 
@@ -533,6 +556,7 @@ namespace GameStateManagementSample
                 bananaCounter++;
                 barrelCounter++;
                 puddleCounter++;
+                heartCounter++;
                 
             }
 
@@ -583,6 +607,29 @@ namespace GameStateManagementSample
             }
 
             //puddle positions
+            foreach (RewardEntity heart in heartVector)
+            {
+
+                if (heart.Position.Y < 0)
+                {
+                    heart.Deactivate();
+                }
+                else
+                {
+                 //   heart.Update(gameTime);
+                    if (rushMode)
+                    {
+                        heart.Position.Y -= (dynamicSpeed + 2);
+                    }
+                    else
+                    {
+                        heart.Position.Y -= dynamicSpeed;
+                    }
+                }
+            }
+
+
+            //puddle positions
             foreach (ObstacleEntity w in puddleVector)
             {
 
@@ -592,7 +639,7 @@ namespace GameStateManagementSample
                 }
                 else
                 {
-                    w.Update(gameTime);
+                   // w.Update(gameTime);
                     if (rushMode)
                     {
                         w.Position.Y -= (dynamicSpeed+2);
@@ -719,7 +766,7 @@ namespace GameStateManagementSample
                     //b.Active = false;
                    
                     
-                    Debug.WriteLine("Collision: player and banana at " + b.Position.Y + ";" +b.Position.X);
+                    //Debug.WriteLine("Collision: player and banana at " + b.Position.Y + ";" +b.Position.X);
                 }
                 }
 
@@ -740,6 +787,23 @@ namespace GameStateManagementSample
 
                     }
                 }
+            }
+
+            foreach (RewardEntity heart in heartVector)
+            {
+               
+                    if (PlayerBoundingBox.Intersects(heart.BoundingBox))
+                    {
+                        //decrease player health
+                        if (player.Health < 3)
+                        {
+                            player.Health += 1;
+                        }
+                        //deactivate obstacle
+                        heart.Deactivate();
+
+                    }
+                
             }
 
             // collision with water in rush mode not available
@@ -862,6 +926,13 @@ namespace GameStateManagementSample
                 o.Draw(spriteBatch);
             }
 
+            //draw barrels 
+            foreach (RewardEntity h in heartVector)
+            {
+                h.Draw(spriteBatch);
+            }
+
+
             foreach (ObstacleEntity w in puddleVector)
             {
                 w.Draw(spriteBatch);
@@ -897,8 +968,20 @@ namespace GameStateManagementSample
            // Rectangle backgroundHud = new Rectangle(0, 0, screenWidth, screenHeight);
           //  Texture2D text = new Texture2D(backgroundHud, backgroundHud.Width, backgroundHud.Height);
             spriteBatch.Draw(headUpDisplayTexture, new Vector2(0, 0), Color.White);
+
+            //draw RushModeState
+            if (cooldownActive)
+            {
+                spriteBatch.Draw(redDotTexture, new Vector2(160, 30), Color.White);
+
+            }
+            else
+            {
+                spriteBatch.Draw(greenDotTexture, new Vector2(160, 30), Color.White);
+            }
+
             //spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(viewport.Width/2, 30), Color.Black);
-            spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(270, 20), Color.Yellow);
+            spriteBatch.DrawString(gameFont, "Score: " + gameScore, new Vector2(270, 50), Color.Yellow);
          
             //draw hearts
             if (player.Health == 3)
