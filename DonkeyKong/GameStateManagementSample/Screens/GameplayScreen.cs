@@ -21,6 +21,7 @@ using Microsoft.Devices.Sensors;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
 using GameStateManagementSample.Screens;
+using Microsoft.Xna.Framework.Input.Touch;
 #endregion
 
 namespace GameStateManagementSample
@@ -36,17 +37,22 @@ namespace GameStateManagementSample
 
         ContentManager content;
         SpriteFont gameFont;
-
+        
         Int32 gameScore;
-
+        
         Int16 screenWidth = 480;
         Int16 screenHeight = 800;
         float rotationValue;
         const Int16 fixedSpeed = 1;
         float dynamicSpeed;
+
+        //for limiting creation of new objects
         Int16 bananaCounter;
         Int16 barrelCounter;
         Int16 puddleCounter;
+        
+        //for slowing animation of objects other than player
+        Int16 animationCounter;
 
         //graphics for HUD
         Texture2D headUpDisplayTexture;
@@ -108,7 +114,8 @@ namespace GameStateManagementSample
         /// </summary>
         public GameplayScreen()
         {
-            random = new Random((int)screenWidth - 20);
+            
+            random = new Random((int)screenHeight/2);
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
@@ -158,8 +165,8 @@ namespace GameStateManagementSample
                 grassTexture = new ParallaxingBackground();
 
                 mainBackground = content.Load<Texture2D>("water");
-                grassTexture.Initialize(content, "grass2", 800, -(fixedSpeed));
-                cloudTexture.Initialize(content, "clouds", 800, -(fixedSpeed*3));
+                grassTexture.Initialize(content, "grass2", 800, -(dynamicSpeed));
+                cloudTexture.Initialize(content, "clouds", 800, -(dynamicSpeed*3));
 
                 //set HUD textures
                 headUpDisplayTexture = content.Load<Texture2D>("HUD2");
@@ -174,7 +181,12 @@ namespace GameStateManagementSample
                     MotionSensor.Start();
                 }
 
-                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk_raster3");
+                //setup input touch gestures
+                TouchPanel.EnabledGestures = GestureType.DoubleTap | GestureType.Flick;
+
+                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk_raster4");
+               
+                Texture2D playerTextureBurstMode = content.Load<Texture2D>("donkey_movement_raster");
                 //set banana texture
                 bananaTexture = content.Load<Texture2D>("bananas_single_raster2");
                 barrelTexture = content.Load<Texture2D>("barrels2");
@@ -183,7 +195,7 @@ namespace GameStateManagementSample
 
                 //set player position to the bottom
                 Vector2 playerPosition = new Vector2(screenWidth / 2,
-                screenHeight/2);
+                screenHeight/2-200);
 
                 player.Initialize(playerPosition);
                 player.InitializeAnimation(playerTexture, playerTexture.Width/20, playerTexture.Height, 20, 1, Color.White, 1, true);
@@ -235,7 +247,7 @@ namespace GameStateManagementSample
 
        //     Debug.WriteLine("Rotation Value: " + rotationValue);
       //      Debug.WriteLine("Quaternion Value: " + e.SensorReading.Attitude.Quaternion);
-            Debug.WriteLine("RollValue: " + e.SensorReading.Attitude.Roll);
+       //     Debug.WriteLine("RollValue: " + e.SensorReading.Attitude.Roll);
            
 
             if(rotationValue >= -0.5 && rotationValue <= 1.9){
@@ -301,13 +313,35 @@ namespace GameStateManagementSample
                                                        bool coveredByOtherScreen)
         {
 
+            // check whether gestures are available
+            while (TouchPanel.IsGestureAvailable)
+            {
+                // read the next gesture
+                var gesture = TouchPanel.ReadGesture();
+
+                // has the user tapped the screen?
+                if (gesture.GestureType == GestureType.DoubleTap)
+                {
+                    Debug.WriteLine("-----DoubleTap detected");
+                }
+                else if(gesture.GestureType == GestureType.Flick)
+                {
+                    Debug.WriteLine("-----Flick detected");
+                }
+               
+            }
+
+
             //check if player health is > 0
             if (player.Health < 1)
             {
                 showGameOverExit();
             }
  
-           // dynamicSpeed = fixedSpeed + gameTime.ElapsedGameTime.Milliseconds/ 10000.0f;
+           dynamicSpeed += gameTime.ElapsedGameTime.Milliseconds/ 100000.0f;
+
+            //testing arguments
+           Debug.WriteLine("SpeedVal :" + dynamicSpeed);
 
             time_last_frame += (float)gameTime.ElapsedGameTime.Milliseconds / 1000.0f;
             if (time_last_frame >= time_between_frame)
@@ -320,53 +354,72 @@ namespace GameStateManagementSample
                 //adding banana
                 if (bananaCounter > 20)
                 {
-                    BananaEntity b = new BananaEntity();
-                    b.Initialize(new Vector2(random.Next(460) + 10, 800));
-                    b.InitializeAnimation(bananaTexture, bananaTexture.Width / 8, bananaTexture.Height, 8, 1, Color.White, 1, true);
-                    bananaVector.Add(b);
-                    bananaCounter = 0;
+                   
+                        BananaEntity b = new BananaEntity();
+                        b.Initialize(new Vector2(random.Next(400) + 40, 800));
+                        b.InitializeAnimation(bananaTexture, bananaTexture.Width / 8, bananaTexture.Height, 8, 1, Color.White, 1, true);
+                        bananaVector.Add(b);
+                        bananaCounter = 0;
+                    
                 }
 
                 //adding barrel
                 if (barrelCounter > 40)
                 {
-                    BarrelEntity o = new BarrelEntity();
-                    o.Initialize(new Vector2(random.Next(440) + 10, 800));
-                    o.InitializeAnimation(barrelTexture, barrelTexture.Width / 8, barrelTexture.Height, 8, 1, Color.White, 1, true);
-                    barrelVector.Add(o);
-                    barrelCounter = 0;
+                    
+                        BarrelEntity o = new BarrelEntity();
+                        o.Initialize(new Vector2(random.Next(400) + 40, 800));
+                        o.InitializeAnimation(barrelTexture, barrelTexture.Width / 8, barrelTexture.Height, 8, 1, Color.White, 1, true);
+                        barrelVector.Add(o);
+                        barrelCounter = 0;
+                    
                 }
 
+                //adding puddle
                 if (puddleCounter > 60)
                 {
                     WaterEntity w = new WaterEntity();
-                    w.Initialize(new Vector2(random.Next(350) + 10, 800));
+                    w.Initialize(new Vector2(random.Next(350) + 30, 800));
                     w.InitializeAnimation(puddleTexture, puddleTexture.Width / 3, puddleTexture.Height, 3, 1, Color.White, 1, true);
                     waterVector.Add(w);
                     puddleCounter = 0;
                 }
 
-                //update bananas
-                foreach (BananaEntity ba in bananaVector)
+                 //slowing animation of objects - only update after 2 ticks
+                if (animationCounter > 2)
                 {
-                    ba.Update(gameTime);
+                    //update bananas
+                    foreach (BananaEntity ba in bananaVector)
+                    {
+                        //trigger update
+
+                        ba.Update(gameTime);
+                    }
+                    
+
+                    //update barrels
+                    foreach (BarrelEntity bar in barrelVector)
+                    {
+                        bar.Update(gameTime);
+                    }
+                    
+
+                    //update puddles
+                    foreach (WaterEntity wa in waterVector)
+                    {
+                        wa.Update(gameTime);
+                    }
+
+                    //resetting animation counter
+                    animationCounter = 0;
+
                 }
+
+                animationCounter++;
+
                 bananaCounter++;
-
-                //update barrels
-                foreach (BarrelEntity bar in barrelVector)
-                {
-                    bar.Update(gameTime);
-                }
                 barrelCounter++;
-
-                //update puddles
-                foreach (WaterEntity wa in waterVector)
-                {
-                    wa.Update(gameTime);
-                }
                 puddleCounter++;
-
                 
             }
 
@@ -384,7 +437,7 @@ namespace GameStateManagementSample
                 else
                 {
                     b.Update(gameTime);
-                    b.Position.Y -= fixedSpeed;
+                    b.Position.Y -= dynamicSpeed;
                 }
             }
 
@@ -400,7 +453,7 @@ namespace GameStateManagementSample
                 else
                 {
                     ba.Update(gameTime);
-                    ba.Position.Y -= fixedSpeed;
+                    ba.Position.Y -= dynamicSpeed;
                 }
             }
 
@@ -415,7 +468,7 @@ namespace GameStateManagementSample
                 else
                 {
                     w.Update(gameTime);
-                    w.Position.Y -= fixedSpeed;
+                    w.Position.Y -= dynamicSpeed;
                 }
             }
            
@@ -423,16 +476,16 @@ namespace GameStateManagementSample
             //player movement
             if (moveRight)
             {
-                player.Position.X += 1f;
+                player.Position.X += 2f;
             }
 
             if (moveLeft)
             {
-                player.Position.X -= 1f;
+                player.Position.X -= 2f;
             }
 
             //destroy player entity if it falls of the ground
-            if (player.Position.X > ScreenManager.Game.GraphicsDevice.Viewport.Width || player.Position.X < 10)
+            if (player.Position.X > ScreenManager.Game.GraphicsDevice.Viewport.Width-20 || player.Position.X < 20)
             {
                 //deactivate player entity
                 player.Active = false;
@@ -458,8 +511,8 @@ namespace GameStateManagementSample
 
             if (IsActive)
             {
-                grassTexture.Update();
-                cloudTexture.Update();
+                grassTexture.Update(-dynamicSpeed);
+                cloudTexture.Update(-3*dynamicSpeed);
 
                 // Apply some random jitter to make the enemy move around.
                 const float randomization = 10;

@@ -13,9 +13,9 @@ namespace GameStateManagementSample.Entities
 
         Texture2D backgroundTexture;
         Vector2[] positions;
-        Int32 speed;
+        float speed;
 
-        public void Initialize(ContentManager content, String texturePath, int screenHeight, int speed)
+        public void Initialize(ContentManager content, String texturePath, int screenHeight, float speed)
         {
             // Load the background texture we will be using
             backgroundTexture = content.Load<Texture2D>(texturePath);
@@ -36,12 +36,12 @@ namespace GameStateManagementSample.Entities
         } 
 
 
-        public void Update()
+        public void Update(float gameSpeed)
         { 
              for (int i = 0; i < positions.Length; i++) 
              {
                   // Update the position of the screen by adding the speed
-                  positions[i].Y += speed;
+                  positions[i].Y += gameSpeed;
                   // If the speed has the background moving to the left
                   if (speed <= 0)
                   {
