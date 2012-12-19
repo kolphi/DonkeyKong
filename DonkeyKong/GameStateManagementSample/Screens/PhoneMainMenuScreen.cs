@@ -11,6 +11,7 @@ using System;
 using GameStateManagement;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using GameStateManagementSample.Screens;
 
 namespace GameStateManagementSample
 {
@@ -35,6 +36,10 @@ namespace GameStateManagementSample
             //sfxButton.Tapped += sfxButton_Tapped;
             //MenuButtons.Add(sfxButton);
 
+            Button instructionsButton = new Button("Instructions");
+            instructionsButton.Tapped += instructionsButton_Tapped;
+            MenuButtons.Add(instructionsButton);
+
             BooleanButton musicButton = new BooleanButton("Music", true);
             musicButton.Tapped += musicButton_Tapped;
             MenuButtons.Add(musicButton);
@@ -49,12 +54,18 @@ namespace GameStateManagementSample
             LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new GameplayScreen(musicState));
         }
 
-        void sfxButton_Tapped(object sender, EventArgs e)
-        {
-            BooleanButton button = sender as BooleanButton;
+        //void sfxButton_Tapped(object sender, EventArgs e)
+        //{
+        //    BooleanButton button = sender as BooleanButton;
 
-            // In a real game, you'd want to store away the value of 
-            // the button to turn off sounds here. :)
+        //    // In a real game, you'd want to store away the value of 
+        //    // the button to turn off sounds here. :)
+        //}
+
+        void instructionsButton_Tapped(object sender, EventArgs e)
+        {
+            // When the "Play" button is tapped, we load the GameplayScreen
+            LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new BackgroundInstructions(), new InstructionsScreen());
         }
 
         void musicButton_Tapped(object sender, EventArgs e)

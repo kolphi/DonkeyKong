@@ -64,7 +64,7 @@ namespace GameStateManagementSample
         {
             // When the screen is activated, we have a valid ScreenManager so we can arrange
             // our buttons on the screen
-            float y = 170f;
+            float y = 140f;
             float center = ScreenManager.GraphicsDevice.Viewport.Bounds.Center.X;
             for (int i = 0; i < MenuButtons.Count; i++)
             {

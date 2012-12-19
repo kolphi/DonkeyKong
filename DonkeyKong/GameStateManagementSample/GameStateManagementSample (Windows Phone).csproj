@@ -95,8 +95,10 @@
     <Compile Include="Entities\RewardEntity.cs" />
     <Compile Include="Entities\WaterEntity.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Screens\BackgroundInstructions.cs" />
     <Compile Include="Screens\BackgroundOverScreen.cs" />
     <Compile Include="Screens\GameOverScreen.cs" />
+    <Compile Include="Screens\InstructionsScreen.cs" />
     <Compile Include="Screens\Interfaces\ICollidable.cs" />
     <Compile Include="Entities\ParallaxingBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
