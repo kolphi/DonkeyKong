@@ -27,14 +27,14 @@ namespace GameStateManagementSample.Entities
 
                 return new Rectangle(
 
-                    (int)Position.X,
+                    (int)Position.X+10,
 
-                    (int)Position.Y,
+                    (int)Position.Y+10,
 
                     //texture width has to be devided by number of frames to get the size of 1 frame
-                    PlayerTexture.Width ,
+                    PlayerTexture.Width-20,
 
-                    PlayerTexture.Height);
+                    PlayerTexture.Height-20);
 
             }
 

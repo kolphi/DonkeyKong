@@ -103,6 +103,7 @@ namespace GameStateManagementSample
         //rotation movement flags
         Boolean moveRight;
         Boolean moveLeft;
+        Boolean moveNormal;
 
         //Vector2 cloudsPosition = Vector2.Zero;
         //float cloudSpeed = 0.5f;
@@ -244,19 +245,26 @@ namespace GameStateManagementSample
 #endif
         }
 
+        /// <summary>
+        /// Open media player for background music
+        /// </summary>
         private void PlaySong(Song playMusic)
         {
             try
             {
                 // Play the music
                 MediaPlayer.Play(playMusic);
-
                 // Loop the currently playing song
                 MediaPlayer.IsRepeating = true;
             }
             catch { }
         }
 
+        /// <summary>
+        /// Method to get sensor changes and values
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">sensor event</param>
         void MotionSensor_CurrentValueChanged(object sender, SensorReadingEventArgs<MotionReading> e)
         {
             //movement detected - rotate the player
@@ -286,6 +294,7 @@ namespace GameStateManagementSample
             {
                 moveLeft = false;
                 moveRight = false;
+                moveNormal = true;
             }
            
         }
@@ -434,7 +443,6 @@ namespace GameStateManagementSample
                 }
 
                 animationCounter++;
-
                 bananaCounter++;
                 barrelCounter++;
                 puddleCounter++;
@@ -450,7 +458,6 @@ namespace GameStateManagementSample
                 {
                     b.Deactivate();
                     //  bananaVector.Remove(b);
-
                 }
                 else
                 {
@@ -458,7 +465,6 @@ namespace GameStateManagementSample
                     b.Position.Y -= dynamicSpeed;
                 }
             }
-
 
             //barrel positions
             foreach (BarrelEntity ba in barrelVector)
@@ -516,11 +522,12 @@ namespace GameStateManagementSample
                 player.Position.X -= 2f;
             }
 
-            else
+            else if (moveNormal)
             {
                 if(moveState != MoveState.WALK)
                 {
                     player.InitializeAnimation(playerTexture, playerTexture.Width / 20, playerTexture.Height, 20, 1, Color.White, 1, true);
+                    moveState = MoveState.WALK;
                 }
             }
 
@@ -529,18 +536,13 @@ namespace GameStateManagementSample
             {
                 //deactivate player entity
                 player.Active = false;
-
-                //play Animation
-
-                showGameOverExit();
-                
+                //GameOver
+                showGameOverExit();                
             }
 
            // player.Update(gameTime);
 
             base.Update(gameTime, otherScreenHasFocus, false);
-
-
 
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
@@ -573,6 +575,7 @@ namespace GameStateManagementSample
 
         private void showGameOverExit()
         {
+            MediaPlayer.Stop();
             LoadingScreen.Load(ScreenManager, true, PlayerIndex.One, new BackgroundOverScreen(), new GameOverScreen(gameScore));
         }
 

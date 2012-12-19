@@ -18,7 +18,7 @@ namespace GameStateManagementSample
     {
 
 
-       public bool musicState;
+       public bool musicState = true;
 
         public PhoneMainMenuScreen()
             : base("")
