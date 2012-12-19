@@ -132,9 +132,9 @@
       <Name>Content</Name>
       <XnaReferenceType>Content</XnaReferenceType>
     </ProjectReference>
-    <ProjectReference Include="..\GameStateManagement\GameStateManagement %28Windows Phone%29.csproj">
+    <ProjectReference Include="..\GameStateManagement\DonkeyKongAdventures.csproj">
       <Project>{D613ECAD-5F4D-44E6-8FB7-7ECAFF3D02D5}</Project>
-      <Name>GameStateManagement %28Windows Phone%29</Name>
+      <Name>DonkeyKongAdventures</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

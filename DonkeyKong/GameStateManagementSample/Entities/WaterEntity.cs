@@ -9,8 +9,7 @@ namespace GameStateManagementSample.Entities
 {
     class WaterEntity : AnimationEntity
     {
-        public int ScorePoints { get; set; }
-
+        
         public WaterEntity()
         {
             // Set the player to be active
@@ -27,8 +26,6 @@ namespace GameStateManagementSample.Entities
             // Set the player to be active
             Active = true;
 
-            // Set the barrel points
-            ScorePoints = 1;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -41,10 +38,6 @@ namespace GameStateManagementSample.Entities
 
         }
 
-        public void setScore(Int16 score)
-        {
-            this.ScorePoints = score;
-        }
 
     }
     

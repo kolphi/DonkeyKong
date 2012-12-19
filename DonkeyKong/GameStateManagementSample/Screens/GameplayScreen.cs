@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
 using GameStateManagementSample.Screens;
 using Microsoft.Xna.Framework.Input.Touch;
+using System.Windows.Threading;
 #endregion
 
 namespace GameStateManagementSample
@@ -97,6 +98,7 @@ namespace GameStateManagementSample
         Texture2D playerTexture;
         Texture2D playerTextureWalkLeft;
         Texture2D playerTextureWalkRight;
+        Texture2D playerTextureBurstMode;
 
         Motion MotionSensor;
 
@@ -105,13 +107,20 @@ namespace GameStateManagementSample
         Boolean moveLeft;
         Boolean moveNormal;
 
+        //RushMode Variables
+        Boolean rushMode;
+        Boolean cooldownActive;
+        Int16 cooldownCounter;
+        Int16 rushModeCounter;
+
         //Vector2 cloudsPosition = Vector2.Zero;
         //float cloudSpeed = 0.5f;
 
         SpriteBatch spriteBatch;
 
+        //sound variables
         Song playMusic;
-        bool MusicState;
+        Boolean MusicState;
 
         #endregion
 
@@ -123,12 +132,28 @@ namespace GameStateManagementSample
         /// </summary>
         public GameplayScreen(bool musicState)
         {
-            
+            //setup input touch gestures
+            TouchPanel.DisplayHeight = 800;
+            TouchPanel.DisplayWidth = 480;
+            TouchPanel.DisplayOrientation = DisplayOrientation.Portrait;
+            TouchPanel.EnabledGestures = GestureType.DoubleTap | GestureType.Tap;
+
+            var touchTimer = new DispatcherTimer();
+            touchTimer.Interval = TimeSpan.FromMilliseconds(50);
+            touchTimer.Tick += new EventHandler(Read_Gestures);
+            touchTimer.Start();
+
+
+            //setup random mechanism - seed is screenheiht/2
             random = new Random((int)screenHeight/2);
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             MusicState = musicState;
+
+            //init rushMode variables
+            rushMode = false;
+            cooldownActive = false;
 
             //init game start score with 0
             gameScore = 0;
@@ -195,14 +220,14 @@ namespace GameStateManagementSample
                     MotionSensor.Start();
                 }
 
-                //setup input touch gestures
-                TouchPanel.EnabledGestures = GestureType.DoubleTap | GestureType.Flick;
-
+               
+                //set playerTextures
                 playerTexture = content.Load<Texture2D>("donkey_walk_raster4");
                 playerTextureWalkLeft = content.Load<Texture2D>("donkey_walk_left");
                 playerTextureWalkRight = content.Load<Texture2D>("donkey_walk_right");
-
-                Texture2D playerTextureBurstMode = content.Load<Texture2D>("donkey_movement_raster");
+                playerTextureBurstMode = content.Load<Texture2D>("donkey_movement_raster");
+                
+                
                 //set banana texture
                 bananaTexture = content.Load<Texture2D>("bananas_single_raster2");
                 barrelTexture = content.Load<Texture2D>("barrels2");
@@ -298,6 +323,47 @@ namespace GameStateManagementSample
             }
            
         }
+        /// <summary>
+        /// Reads the touch gestures and performs actions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Read_Gestures(object sender, EventArgs e)
+        {
+            TouchPanel.EnabledGestures = GestureType.DoubleTap | GestureType.Tap;
+
+            
+            // check whether gestures are available
+            while (TouchPanel.IsGestureAvailable)
+            {
+                // read the next gesture
+                GestureSample gesture = TouchPanel.ReadGesture();
+
+                switch (gesture.GestureType)
+                {
+                    case GestureType.DoubleTap:
+                        Debug.WriteLine("-----DoubleTap detected");
+
+                        if (!cooldownActive && !rushMode)
+                        {
+                            rushMode = true;
+                            rushModeCounter = 11;
+                            player.InitializeAnimation(playerTextureBurstMode, playerTextureBurstMode.Width / 11, playerTextureBurstMode.Height, 11, 1, Color.White, 1, false);
+                            moveState = MoveState.JUMP;
+                        }
+
+                        break;
+                        
+                    case GestureType.Tap:
+                        Debug.WriteLine("----Tap detected");
+
+                        break;
+                }
+
+            }
+
+
+        }
 
 
         public override void Deactivate()
@@ -338,33 +404,17 @@ namespace GameStateManagementSample
         public override void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                        bool coveredByOtherScreen)
         {
-
-            // check whether gestures are available
-            while (TouchPanel.IsGestureAvailable)
-            {
-                // read the next gesture
-                var gesture = TouchPanel.ReadGesture();
-
-                // has the user tapped the screen?
-                if (gesture.GestureType == GestureType.DoubleTap)
-                {
-                    Debug.WriteLine("-----DoubleTap detected");
-                }
-                else if(gesture.GestureType == GestureType.Flick)
-                {
-                    Debug.WriteLine("-----Flick detected");
-                }
-               
-            }
-
+           
 
             //check if player health is > 0
             if (player.Health < 1)
             {
                 showGameOverExit();
             }
- 
-           dynamicSpeed += gameTime.ElapsedGameTime.Milliseconds/ 100000.0f;
+
+           
+                dynamicSpeed += gameTime.ElapsedGameTime.Milliseconds / 100000.0f;
+           
 
             //testing arguments
            Debug.WriteLine("SpeedVal :" + dynamicSpeed);
@@ -378,12 +428,49 @@ namespace GameStateManagementSample
 
                 Debug.WriteLine("Tick");
 
+
+                //check if rush mode is active
+                if (rushMode)
+                {
+                    rushModeCounter--;
+                    //check if rush mode has finished
+                    if (rushModeCounter < 1)
+                    {
+                        //set rush mode off, enable cooldown
+                        rushMode = false;
+                        cooldownActive = true;
+                        //set move state
+                        moveState = MoveState.WALK;
+                        //change player animation back to walk
+                        player.InitializeAnimation(playerTexture, playerTexture.Width / 20, playerTexture.Height, 20, 1, Color.White, 1, true);
+                            
+                    }
+
+                }
+
+                //check if cooldown for rushmode is active
+                if (cooldownActive)
+                {
+                    cooldownCounter--;
+
+                    if (cooldownCounter < 1)
+                    {
+                        //reset variables
+                        cooldownActive = false;
+                       
+                        cooldownCounter = 20;
+                    }
+
+                 
+                }
+
+
                 //adding banana
                 if (bananaCounter > 20)
                 {
                    
                         BananaEntity b = new BananaEntity();
-                        b.Initialize(new Vector2(random.Next(400) + 40, 800));
+                        b.Initialize(new Vector2(random.Next(360) + 60, 800));
                         b.InitializeAnimation(bananaTexture, bananaTexture.Width / 8, bananaTexture.Height, 8, 1, Color.White, 1, true);
                         bananaVector.Add(b);
                         bananaCounter = 0;
@@ -462,22 +549,36 @@ namespace GameStateManagementSample
                 else
                 {
                     b.Update(gameTime);
-                    b.Position.Y -= dynamicSpeed;
+                    if (rushMode)
+                    {
+                        b.Position.Y -= (dynamicSpeed + 2);
+                    }
+                    else
+                    {
+                        b.Position.Y -= dynamicSpeed;
+                    }
                 }
             }
 
             //barrel positions
-            foreach (BarrelEntity ba in barrelVector)
+            foreach (BarrelEntity barrel in barrelVector)
             {
 
-                if (ba.Position.Y < 0)
+                if (barrel.Position.Y < 0)
                 {
-                    ba.Deactivate();
+                    barrel.Deactivate();
                 }
                 else
                 {
-                    ba.Update(gameTime);
-                    ba.Position.Y -= dynamicSpeed;
+                    barrel.Update(gameTime);
+                    if (rushMode)
+                    {
+                        barrel.Position.Y -= (dynamicSpeed + 2);
+                    }
+                    else
+                    {
+                        barrel.Position.Y -= dynamicSpeed;
+                    }
                 }
             }
 
@@ -492,43 +593,54 @@ namespace GameStateManagementSample
                 else
                 {
                     w.Update(gameTime);
-                    w.Position.Y -= dynamicSpeed;
+                    if (rushMode)
+                    {
+                        w.Position.Y -= (dynamicSpeed+2);
+                    }
+                    else
+                    {
+                        w.Position.Y -= dynamicSpeed;
+                    }
                 }
             }
-           
-           
-            //player movement
-            if (moveRight)
+
+            //check if rush mode is active, otherways no move will be performed
+            if (moveState != MoveState.JUMP)
             {
-                if (moveState != MoveState.RIGHT)
+                //player movement
+                if (moveRight)
                 {
-                    //change animation to walking
-                    player.InitializeAnimation(playerTextureWalkRight, playerTextureWalkRight.Width / 18, playerTextureWalkRight.Height, 18, 1, Color.White, 1, true);
+                    if (moveState != MoveState.RIGHT)
+                    {
+                        //change animation to walking
+                        player.InitializeAnimation(playerTextureWalkRight, playerTextureWalkRight.Width / 18, playerTextureWalkRight.Height, 18, 1, Color.White, 1, true);
 
-                    moveState = MoveState.RIGHT;
+                        moveState = MoveState.RIGHT;
+                    }
+                    player.Position.X += 2f;
                 }
-                player.Position.X += 2f;
-            }
 
-            else if (moveLeft)
-            {
-                if (moveState != MoveState.LEFT)
+                else if (moveLeft)
                 {
-                    //change animation to walking
-                    player.InitializeAnimation(playerTextureWalkLeft, playerTextureWalkLeft.Width / 18, playerTextureWalkLeft.Height, 18, 1, Color.White, 1, true);
+                    if (moveState != MoveState.LEFT)
+                    {
+                        //change animation to walking
+                        player.InitializeAnimation(playerTextureWalkLeft, playerTextureWalkLeft.Width / 18, playerTextureWalkLeft.Height, 18, 1, Color.White, 1, true);
 
-                    moveState = MoveState.LEFT;
+                        moveState = MoveState.LEFT;
+                    }
+                    player.Position.X -= 2f;
                 }
-                player.Position.X -= 2f;
-            }
 
-            else if (moveNormal)
-            {
-                if(moveState != MoveState.WALK)
+                else if (moveNormal)
                 {
-                    player.InitializeAnimation(playerTexture, playerTexture.Width / 20, playerTexture.Height, 20, 1, Color.White, 1, true);
-                    moveState = MoveState.WALK;
+                    if (moveState != MoveState.WALK)
+                    {
+                        player.InitializeAnimation(playerTexture, playerTexture.Width / 20, playerTexture.Height, 20, 1, Color.White, 1, true);
+                        moveState = MoveState.WALK;
+                    }
                 }
+
             }
 
             //destroy player entity if it falls of the ground
@@ -542,6 +654,7 @@ namespace GameStateManagementSample
 
            // player.Update(gameTime);
 
+
             base.Update(gameTime, otherScreenHasFocus, false);
 
 
@@ -553,8 +666,17 @@ namespace GameStateManagementSample
 
             if (IsActive)
             {
-                grassTexture.Update(-dynamicSpeed);
-                cloudTexture.Update(-3*dynamicSpeed);
+                if (rushMode)
+                {
+                    grassTexture.Update(- (dynamicSpeed +2));
+                    cloudTexture.Update(-3 * (dynamicSpeed +2));
+                }
+                else
+                {
+                    grassTexture.Update(-(dynamicSpeed));
+                    cloudTexture.Update(-3 * (dynamicSpeed));
+                }
+
 
                 // Apply some random jitter to make the enemy move around.
                 const float randomization = 10;
@@ -620,13 +742,16 @@ namespace GameStateManagementSample
                 }
             }
 
-
-            foreach (ObstacleEntity water in puddleVector)
+            // collision with water in rush mode not available
+            if (!rushMode)
             {
-                if (PlayerBoundingBox.Intersects(water.BoundingBox))
+                foreach (ObstacleEntity water in puddleVector)
                 {
-                    showGameOverExit();
-                    //DrawHud(spriteBatch, ScreenManager.GraphicsDevice.Viewport);
+                    if (PlayerBoundingBox.Intersects(water.BoundingBox))
+                    {
+                        showGameOverExit();
+                        //DrawHud(spriteBatch, ScreenManager.GraphicsDevice.Viewport);
+                    }
                 }
             }
         }
@@ -722,9 +847,7 @@ namespace GameStateManagementSample
             spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
             grassTexture.Draw(spriteBatch);
 
-            //draw player
-            player.Draw(spriteBatch);
-           
+            
             //draw bananas
             foreach (BananaEntity b in bananaVector)
             {
@@ -743,6 +866,10 @@ namespace GameStateManagementSample
             {
                 w.Draw(spriteBatch);
             }
+
+            //draw player
+            player.Draw(spriteBatch);
+           
 
 
             //draw clouds

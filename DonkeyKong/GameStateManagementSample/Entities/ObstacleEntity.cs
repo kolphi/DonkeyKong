@@ -32,9 +32,9 @@ namespace GameStateManagementSample.Entities
                     (int)Position.Y+10,
 
                     //texture width has to be devided by number of frames to get the size of 1 frame
-                    PlayerTexture.Width-20,
+                    PlayerTexture.Width-30,
 
-                    PlayerTexture.Height-20);
+                    PlayerTexture.Height-30);
 
             }
 
@@ -57,11 +57,6 @@ namespace GameStateManagementSample.Entities
             this.FrameWidth = PlayerTexture.Width;
         }
 
-        public override void Update(GameTime gameTime)
-        {
-
-
-        }
 
         public override void Draw(SpriteBatch spriteBatch)
         {

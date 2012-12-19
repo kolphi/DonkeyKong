@@ -60,6 +60,9 @@ namespace GameStateManagementSample.Entities
         public virtual void InitializeAnimation(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
         {
 
+            // Set the Animation to active if animation is initialized (for switching animations)
+            Active = true;
+
             // Set the time to zero
             elapsedTime = 0;
             currentFrame = 0;
