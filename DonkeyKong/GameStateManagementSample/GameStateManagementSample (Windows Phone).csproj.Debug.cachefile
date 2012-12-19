@@ -7,12 +7,15 @@ Content\grass2.xnb
 Content\grass3.xnb
 Content\clouds.xnb
 Content\water.xnb
+Content\menufont.xnb
+Content\gamefont.xnb
 Content\sprites.xnb
 Content\donkey_walk.xnb
 Content\bananas_single.xnb
 Content\donkey_walk2.xnb
 Content\donkey_walk_raster2.xnb
 Content\bananas_single_raster.xnb
+Content\backMusic.xnb
 Content\Heart_1.xnb
 Content\Heart_2.xnb
 Content\Heart_3.xnb
@@ -29,7 +32,6 @@ Content\donkey_walk_raster3.xnb
 Content\donkey_walk_raster4.xnb
 Content\donkey_movement_raster.xnb
 Content\puddle2.xnb
-Content\menufont.xnb
-Content\gamefont.xnb
-Content\backMusic.xnb
+Content\donkey_walk_left.xnb
+Content\donkey_walk_right.xnb
 Content\backMusic.wma

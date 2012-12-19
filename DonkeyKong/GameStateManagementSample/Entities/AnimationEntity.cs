@@ -60,6 +60,10 @@ namespace GameStateManagementSample.Entities
         public virtual void InitializeAnimation(Texture2D texture, int frameWidth, int frameHeight, int frameCount, int frametime, Color color, float scale, bool looping)
         {
 
+            // Set the time to zero
+            elapsedTime = 0;
+            currentFrame = 0;
+
             // Keep a local copy of the values passed in
             this.PlayerTexture = texture;
             this.FrameWidth = frameWidth;

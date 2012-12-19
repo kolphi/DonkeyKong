@@ -46,6 +46,10 @@ namespace GameStateManagementSample
         const Int16 fixedSpeed = 1;
         float dynamicSpeed;
 
+        //enum for current animation
+        enum MoveState { WALK = 1, RIGHT, LEFT, JUMP};
+        MoveState moveState;
+
         //for limiting creation of new objects
         Int16 bananaCounter;
         Int16 barrelCounter;
@@ -90,6 +94,10 @@ namespace GameStateManagementSample
 
         PlayerEntity player;
 
+        Texture2D playerTexture;
+        Texture2D playerTextureWalkLeft;
+        Texture2D playerTextureWalkRight;
+
         Motion MotionSensor;
 
         //rotation movement flags
@@ -123,6 +131,9 @@ namespace GameStateManagementSample
 
             //init game start score with 0
             gameScore = 0;
+
+            //init move state with WALK
+            moveState = MoveState.WALK;
 
             //init motion sensor
             MotionSensor = new Motion();
@@ -186,8 +197,10 @@ namespace GameStateManagementSample
                 //setup input touch gestures
                 TouchPanel.EnabledGestures = GestureType.DoubleTap | GestureType.Flick;
 
-                Texture2D playerTexture = content.Load<Texture2D>("donkey_walk_raster4");
-               
+                playerTexture = content.Load<Texture2D>("donkey_walk_raster4");
+                playerTextureWalkLeft = content.Load<Texture2D>("donkey_walk_left");
+                playerTextureWalkRight = content.Load<Texture2D>("donkey_walk_right");
+
                 Texture2D playerTextureBurstMode = content.Load<Texture2D>("donkey_movement_raster");
                 //set banana texture
                 bananaTexture = content.Load<Texture2D>("bananas_single_raster2");
@@ -197,12 +210,14 @@ namespace GameStateManagementSample
 
                 //set player position to the bottom
                 Vector2 playerPosition = new Vector2(screenWidth / 2,
-                screenHeight/2-200);
+                screenHeight/2-250);
 
+                //start animation is MoveState.WALK
                 player.Initialize(playerPosition);
                 player.InitializeAnimation(playerTexture, playerTexture.Width/20, playerTexture.Height, 20, 1, Color.White, 1, true);
 
                 
+                //enable music if status is set to ON
                 if (MusicState == true)
                 {                    
                     playMusic = content.Load<Song>("backMusic");
@@ -351,6 +366,7 @@ namespace GameStateManagementSample
                 //   player.Update(gameTime);
                 time_last_frame = 0f;
                 player.Update(gameTime);
+
                 Debug.WriteLine("Tick");
 
                 //adding banana
@@ -478,16 +494,38 @@ namespace GameStateManagementSample
             //player movement
             if (moveRight)
             {
+                if (moveState != MoveState.RIGHT)
+                {
+                    //change animation to walking
+                    player.InitializeAnimation(playerTextureWalkRight, playerTextureWalkRight.Width / 18, playerTextureWalkRight.Height, 18, 1, Color.White, 1, true);
+
+                    moveState = MoveState.RIGHT;
+                }
                 player.Position.X += 2f;
             }
 
-            if (moveLeft)
+            else if (moveLeft)
             {
+                if (moveState != MoveState.LEFT)
+                {
+                    //change animation to walking
+                    player.InitializeAnimation(playerTextureWalkLeft, playerTextureWalkLeft.Width / 18, playerTextureWalkLeft.Height, 18, 1, Color.White, 1, true);
+
+                    moveState = MoveState.LEFT;
+                }
                 player.Position.X -= 2f;
             }
 
+            else
+            {
+                if(moveState != MoveState.WALK)
+                {
+                    player.InitializeAnimation(playerTexture, playerTexture.Width / 20, playerTexture.Height, 20, 1, Color.White, 1, true);
+                }
+            }
+
             //destroy player entity if it falls of the ground
-            if (player.Position.X > ScreenManager.Game.GraphicsDevice.Viewport.Width-20 || player.Position.X < 20)
+            if (player.Position.X > ScreenManager.Game.GraphicsDevice.Viewport.Width-30 || player.Position.X < 30)
             {
                 //deactivate player entity
                 player.Active = false;
